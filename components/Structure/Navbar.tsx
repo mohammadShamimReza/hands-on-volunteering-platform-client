@@ -1,16 +1,52 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { getTokenFromCookie } from "@/lib/auth/token";
+import { useGetUserInfoQuery } from "@/redux/api/authApi";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { storeUserInfo } from "@/redux/slice/authSlice";
 import { Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const Navbar = () => {
   const [active, setActive] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+
+    const [authenticated, setAuthenticated] = useState<boolean>(false);
+
+    const authTokenFromRedux = useAppSelector((state) => state.auth.authToken);
+
+    const dispatch = useAppDispatch();
+   
+
+    const removeTokenFromCookies = useCallback(() => {
+      return removeTokenFromCookies();
+    }, []);
+  
+  const authToken = getTokenFromCookie() || authTokenFromRedux;
+  const { data, error, isLoading } = useGetUserInfoQuery(undefined);
+    useEffect(() => {
+      if (data) {
+        dispatch(storeUserInfo(data)); // Set user in Redux if data is returned
+      }
+      
+      if (!authToken) {
+        setAuthenticated(false);
+      } else {
+        setAuthenticated(true);
+      }
+    }, [
+      authToken,
+      authTokenFromRedux,
+      data,
+      dispatch,
+      error,
+      removeTokenFromCookies,
+    ]); 
 
   const handleSetActive = (name: string) => {
     setActive(name);
@@ -75,7 +111,9 @@ const Navbar = () => {
       </div>
 
       {/* Theme Toggle Button */}
-      <div>
+      <div className="flex items-center gap-2">
+        {!authenticated ? <Link href={'/signup'}>Sing in</Link> : <div className=""></div>}
+
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="p-2 rounded-md focus:outline-none hover:cursor-pointer "

@@ -22,6 +22,8 @@ export default function Page() {
 
   const { data: userData, isLoading } = useGetUserInfoQuery({ undefined });
 
+  console.log(userData, isLoading);
+
   // Set initial mount state
   useEffect(() => {
     setIsMounted(true);
