@@ -1,10 +1,12 @@
+import Footer from "@/components/Structure/Footer";
+import Navbar from "@/components/Structure/Navbar";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { NavigationProvider } from "@/contexts/NavigatoinContext";
 import Providers from "@/lib/provider/Providers";
 import type { Metadata } from "next";
-import {  Open_Sans } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 
 const open_sens = Open_Sans({
   subsets: ["latin"],
@@ -35,7 +37,10 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <Navbar />
+              <div className="mx-auto max-w-6xl min-h-screen">{children}</div>
+
+              <Footer />
               <Toaster />
             </ThemeProvider>
           </NavigationProvider>
