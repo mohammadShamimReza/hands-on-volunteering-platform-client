@@ -1,14 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserInfo {
-  name: string;
-  email: string;
-  role: string;
   id: string;
-  phone: number;
-  address: string;
-  payment: boolean;
-  profile_image: string;
+  fullName: string;
+  email: string;
+  password: string;
+  bio: string;
+  skills: string[];
+  causes: string[];
+  role: "USER" | "ADMIN"; // Assuming roles can be USER or ADMIN
+  profileImage: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthState {
@@ -18,14 +21,17 @@ interface AuthState {
 
 const initialState: AuthState = {
   userInfo: {
-    name: "",
-    email: "",
-    role: "",
-    id: "",
-    phone: 0, // Initial value for phone (default to 0 or your preferred placeholder)
-    address: "", // Initial value for address (default to an empty string)
-    payment: false, //
-    profile_image: "",
+    id: "", // Empty (will be assigned upon creation)
+    fullName: " User", // Default name
+    email: "example@example.com", // Placeholder email
+    password: "", // Empty (should be securely handled)
+    bio: "", // Empty (user can update it)
+    skills: [], // Empty (user can add skills)
+    causes: [], // Empty (user can add causes)
+    role: "USER", // Defaults to normal user
+    profileImage: null, // Empty (user can upload)
+    createdAt: new Date().toISOString(), // Default to current timestamp
+    updatedAt: new Date().toISOString(),
   },
   authToken: null,
 };
