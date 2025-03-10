@@ -179,6 +179,22 @@ const ProfilePage: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* CRUD Section for Events, Teams, and Posts */}
+      <section className="max-w-2xl w-full mt-6">
+        <h2 className="text-xl font-bold mb-4">Manage Your Content</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Button asChild>
+            <a href="/events/manage">Manage Events</a>
+          </Button>
+          <Button asChild>
+            <a href="/teams/manage">Manage Teams</a>
+          </Button>
+          <Button asChild>
+            <a href="/helpPost/manage">Manage Posts</a>
+          </Button>
+        </div>
+      </section>
+
       {/* Volunteer History */}
       <section className="max-w-2xl w-full mt-6">
         <h2 className="text-xl font-bold mb-4">Volunteer History</h2>
