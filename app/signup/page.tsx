@@ -1,10 +1,5 @@
 "use client";
 
-import { z } from "zod";
-import { useForm, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,44 +8,98 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Eye, EyeOff } from "lucide-react";
-import { useCreateUserMutation } from "@/redux/api/authApi";
-import { toast } from "sonner";
-import { storeTokenInCookie } from "@/lib/auth/token";
-import { storeAuthToken, storeUserInfo } from "@/redux/slice/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
 import { useNavigation } from "@/contexts/NavigatoinContext";
+import { storeTokenInCookie } from "@/lib/auth/token";
+import { useCreateUserMutation } from "@/redux/api/authApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { storeAuthToken, storeUserInfo } from "@/redux/slice/authSlice";
+import { Eye, EyeOff } from "lucide-react";
+import Select from "react-select";
+import { toast } from "sonner";
 
 // Define validation schema with Zod
+// Define validation schema with Zod
 const signupSchema = z.object({
-  
-  name: z.string().min(1, "name name is required"),
+  fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email format"),
-  phone: z.number().min(10, "Invalid phone number format"),
+  bio: z.string().min(1, "Bio is required"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
     .regex(
       /(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
       "Password must contain a letter, a number, and a special character"
-  ),
-  
-  address: z.string().optional(),
-
-  role: z.string().min(2, "Role is required"),
+    ),
+  skills: z.array(z.string()).nonempty("Select at least one skill"),
+  causes: z.array(z.string()).nonempty("Select at least one cause"),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
+type OptionType = { label: string; value: string };
+
+const skillsOptions = [
+  "Academic",
+  "Art",
+  "Business",
+  "Communication",
+  "Computer",
+  "Cooking",
+  "Craft",
+  "Creative",
+  "Design",
+  "Engineering",
+  "Finance",
+  "Health",
+  "Language",
+  "Leadership",
+  "Legal",
+  "Management",
+  "Marketing",
+  "Music",
+  "Photography",
+  "Programming",
+  "Science",
+  "Social",
+].map((skill) => ({ label: skill, value: skill }));
+
+const causesOptions = [
+  "Animal",
+  "Arts",
+  "Children",
+  "Community",
+  "Crisis",
+  "Culture",
+  "Disability",
+  "Disaster",
+  "Education",
+  "Employment",
+  "Elderly",
+  "Environment",
+  "Health",
+  "Human",
+  "Humanitarian",
+  "International",
+  "Poverty",
+  "Rights",
+  "Social",
+  "Sports",
+  "Technology",
+].map((cause) => ({ label: cause, value: cause }));
 
 const SignupPage: React.FC = () => {
   const { setSelectedMenu } = useNavigation();
@@ -67,12 +116,12 @@ const SignupPage: React.FC = () => {
   const formMethods = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      name: "",
+      fullName: "",
       email: "",
       password: "",
-      phone: 0,
-      address: "",
-      role: "patient",
+      bio: "",
+      skills: [],
+      causes: [],
     },
   });
 
@@ -83,40 +132,35 @@ const SignupPage: React.FC = () => {
   } = formMethods;
 
   const onSubmit = async (data: SignupFormData) => {
-    console.log(data);
+    console.log(data, "this is input data");
     // Simulated API call
-    if (data.email !== "" && data.password !== "") {
-      try {
-        setLoading(true); // Start loading
+    setLoading(true); // Start loading
+    try {
+      const result = await createUser(data);
+      console.log(result);
+      setSelectedMenu("overview");
+      if (result?.error) {
+        toast("User not created successfully", {
+          style: {
+            backgroundColor: "red",
+            color: "white",
+          },
+        });
+      } else {
+        toast("User created successfully");
 
-        const result = await createUser(data);
-        console.log(result);
-        setSelectedMenu("overview");
-        if (result?.error) {
-          toast("User not created successfully", {
-            style: {
-              backgroundColor: "red",
-              color: "white",
-            },
-          });
-        } else {
-          toast("User created successfully");
+        storeTokenInCookie(result?.data?.data.accessToken);
+        dispatch(storeAuthToken(result?.data?.data.accessToken));
+        localStorage.setItem("jwt", result?.data?.data.accessToken);
 
-          storeTokenInCookie(result?.data?.data.accessToken);
-          dispatch(storeAuthToken(result?.data?.data.accessToken));
-          localStorage.setItem("jwt", result?.data?.data.accessToken);
-
-          dispatch(storeUserInfo(result?.data?.user));
-          router.push("/");
-          window.location.reload();
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false); // End loading
+        dispatch(storeUserInfo(result?.data?.user));
+        router.push("/");
+        window.location.reload();
       }
-    } else {
-      alert("Invalid email or password.");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -131,21 +175,23 @@ const SignupPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <FormProvider {...formMethods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className=" space-y-4">
+              <div className="">
+                {/* Full Name Field */}
                 <FormField
                   control={control}
-                  name="name"
+                  name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Full name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Name" {...field} />
+                        <Input placeholder="Full name" {...field} />
                       </FormControl>
-                      <FormMessage>{errors.name?.message}</FormMessage>
+                      <FormMessage>{errors.fullName?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
+                <br />
 
                 {/* Email Field */}
                 <FormField
@@ -161,7 +207,7 @@ const SignupPage: React.FC = () => {
                     </FormItem>
                   )}
                 />
-
+                <br />
                 <FormField
                   control={control}
                   name="password"
@@ -191,66 +237,72 @@ const SignupPage: React.FC = () => {
                           </button>
                         </div>
                       </FormControl>
+                      <p className="text-xs text-muted-foreground ml-3">
+                        Password must contain a letter, a number, and a special
+                        character
+                      </p>
                       <FormMessage>{errors.password?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
-
-                {/* Phone Field */}
+                <br />
+                {/* bio Field */}
                 <FormField
                   control={control}
-                  name="phone"
+                  name="bio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>Bio</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Phone Number"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value, 10) || "")
-                          }
-                        />
+                        <Input type="text" placeholder="Bio data" {...field} />
                       </FormControl>
-                      <FormMessage>{errors.phone?.message}</FormMessage>
+                      <FormMessage>{errors.bio?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
-
-                {/* Address Field */}
-                <FormField
+                <br />
+                <p className="mb-0.5">Skills</p>
+                <Controller
+                  name="skills"
                   control={control}
-                  name="address"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Address" {...field} />
-                      </FormControl>
-                      <FormMessage>{errors.address?.message}</FormMessage>
-                    </FormItem>
+                    <Select
+                      {...field}
+                      options={skillsOptions}
+                      value={skillsOptions.filter((option) =>
+                        field.value.includes(option.value)
+                      )}
+                      isMulti
+                      onChange={(selectedOptions) =>
+                        field.onChange(
+                          selectedOptions.map((option) => option.value)
+                        )
+                      }
+                    />
                   )}
+                  rules={{ required: true }}
                 />
-
-                {/* Role Field */}
-                <FormField
+                <br />
+                <p className="mb-0.5">Causes</p>
+                <Controller
+                  name="causes"
                   control={control}
-                  name="role"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Role"
-                          {...field}
-                          value={"patient"}
-                          disabled
-                        />
-                      </FormControl>
-                      <FormMessage>{errors.role?.message}</FormMessage>
-                    </FormItem>
+                    <Select
+                      {...field}
+                      options={causesOptions}
+                      value={causesOptions.filter((option) =>
+                        field.value.includes(option.value)
+                      )}
+                      isMulti
+                      onChange={(selectedOptions) =>
+                        field.onChange(
+                          selectedOptions.map((option) => option.value)
+                        )
+                      }
+                    />
                   )}
+                  rules={{ required: true }}
                 />
               </div>
               <Button type="submit" className="w-full">

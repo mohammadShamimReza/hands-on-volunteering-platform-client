@@ -1,6 +1,6 @@
 "use client";
 
-import MainPage from "@/components/contants/MainPage";
+import MainPage from "@/components/MainPage";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { getTokenFromCookie } from "@/lib/auth/token";
 import { useGetUserInfoQuery } from "@/redux/api/authApi";
