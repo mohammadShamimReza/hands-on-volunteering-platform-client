@@ -1,19 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
+import Link from "next/link";
 
 const HomePage = () => {
   return (
     <div className="w-full min-h-screen flex flex-col items-center">
       {/* Hero Section */}
       <section
-        className="relative w-full h-[80vh] flex flex-col justify-center items-center text-white text-center bg-cover bg-center"
-        style={{ backgroundImage: "url('/hero-image.webp')" }}
+        className=" w-full h-[80vh] flex flex-col justify-center items-center text-black text-center bg-cover bg-center "
+        style={{ backgroundImage: "url('/hero-image.webp')"}}
       >
-        <div className="bg-black bg-opacity-50 w-full h-full flex flex-col justify-center items-center px-4">
+        <div className="bg-opacity-50 w-full h-full flex flex-col justify-center items-center px-4">
           <h1 className="text-5xl font-bold mb-4">
             Find Meaningful Volunteer Opportunities
           </h1>
@@ -45,7 +44,7 @@ const HomePage = () => {
           ].map((category) => (
             <div
               key={category}
-              className="p-4 bg-gray-100 rounded-lg shadow text-center hover:bg-gray-200 transition"
+              className="p-4 border rounded-lg shadow text-center"
             >
               <p className="font-semibold">{category}</p>
             </div>
@@ -81,7 +80,7 @@ const HomePage = () => {
       </section>
 
       {/* Impact Metrics Section */}
-      <section className="w-full py-16 bg-gray-100 text-center">
+      <section className="w-full py-16 border-dotted border-2 rounded-2xl  text-center">
         <h2 className="text-3xl font-bold mb-6">Making a Difference</h2>
         <p className="mb-6">
           See how our volunteers are changing lives every day.
@@ -105,14 +104,14 @@ const HomePage = () => {
       <section className="py-16 w-full max-w-6xl text-center">
         <h2 className="text-3xl font-bold mb-6">What Volunteers Say</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="p-6 bg-gray-50 rounded-lg shadow">
+          <div className="p-6 border-dashed border-2 rounded-lg shadow">
             <p className="italic">
               "Volunteering has changed my life! I’ve made so many connections
               and helped causes I deeply care about."
             </p>
             <p className="mt-4 font-semibold">- Sarah, Community Volunteer</p>
           </div>
-          <div className="p-6 bg-gray-50 rounded-lg shadow">
+          <div className="p-6 border-dashed border-2 rounded-lg shadow">
             <p className="italic">
               "HandsOn gave me the opportunity to contribute to meaningful
               projects and make a real impact!"
@@ -123,7 +122,7 @@ const HomePage = () => {
       </section>
 
       {/* Final Call to Action */}
-      <section className="w-full py-16 text-center bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
+      <section className="w-full py-16 text-center bg-gradient-to-r rounded-2xl mb-5 from-indigo-500 to-blue-600 text-white">
         <h2 className="text-3xl font-bold mb-4">
           Join Hands to Make a Difference
         </h2>
