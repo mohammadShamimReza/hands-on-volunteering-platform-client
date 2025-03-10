@@ -1,21 +1,98 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Menu, Moon, Sun } from "lucide-react";
+import { getTokenFromCookie } from "@/lib/auth/token";
+import { useGetUserInfoQuery } from "@/redux/api/authApi";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { removeAuthToken, storeAuthToken, storeUserInfo } from "@/redux/slice/authSlice";
+import { Menu, Moon, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
+
 
 const Navbar = () => {
   const [active, setActive] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const dispatch = useAppDispatch();
+  const tokenFromLocalStorage = useMemo(() => {
+    // Only access localStorage if running in the browser
+    if (typeof window !== "undefined") {
+      return getTokenFromCookie();
+    }
+    return null;
+  }, []);
+
+  const { data: userData, isLoading } = useGetUserInfoQuery({ undefined });
+
+  const [authenticated, setAuthenticated] = useState<boolean>(false);
+
+  const authTokenFromRedux = useAppSelector((state) => state.auth.authToken);
+
+
+  const removeTokenFromCookies = useCallback(() => {
+    return removeTokenFromCookies();
+  }, []);
+  // Store token in Redux if available
+  useEffect(() => {
+    if (tokenFromLocalStorage) {
+      dispatch(storeAuthToken(tokenFromLocalStorage));
+    }
+  }, [tokenFromLocalStorage, dispatch]);
+
+  // Store user data in Redux when available
+  useEffect(() => {
+    if (userData) {
+      dispatch(storeUserInfo(userData?.data));
+    }
+  }, [userData, dispatch]);
+
+  const authToken = getTokenFromCookie() || authTokenFromRedux;
+  useEffect(() => {
+    if (userData) {
+      dispatch(storeUserInfo(userData.data)); // Set user in Redux if data is returned
+    }
+
+    if (!authToken) {
+      setAuthenticated(false);
+    } else {
+      setAuthenticated(true);
+    }
+  }, [
+    authToken,
+    authTokenFromRedux,
+    userData,
+    dispatch,
+    removeTokenFromCookies,
+  ]);
 
   const handleSetActive = (name: string) => {
     setActive(name);
     setIsOpen(false); // Close mobile menu on selection
   };
+
+  const handleLogout = () => {
+    removeTokenFromCookies();
+    dispatch(removeAuthToken());
+
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
+  };
+
+  console.log(authenticated, "authenticated");
 
   return (
     <nav className="flex justify-between items-center w-full px-6  bg-white dark:bg-gray-900 shadow-md relative">
@@ -75,7 +152,45 @@ const Navbar = () => {
       </div>
 
       {/* Theme Toggle Button */}
-      <div>
+      <div className="flex items-center gap-2">
+        {!authenticated ? (
+          <Link href={"/signup"}>Sing in</Link>
+        ) : (
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>
+                  {" "}
+                  {userData?.profileImage ? (
+                    <Image
+                      src={userData?.profileImage}
+                      alt="Profile Picture"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink>
+                    <a
+                      href={"/profile"}
+                      className="text-center bg-black text-white rounded-lg p-2"
+                    >
+                      Profile
+                    </a>{" "}
+                    <Button onClick={handleLogout} className="cursor-pointer">
+                      log out
+                    </Button>
+                  </NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        )}
+
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="p-2 rounded-md focus:outline-none hover:cursor-pointer "

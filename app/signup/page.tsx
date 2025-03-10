@@ -47,6 +47,7 @@ const signupSchema = z.object({
     ),
   skills: z.array(z.string()).nonempty("Select at least one skill"),
   causes: z.array(z.string()).nonempty("Select at least one cause"),
+  role: z.string().optional(),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -133,6 +134,7 @@ const SignupPage: React.FC = () => {
 
   const onSubmit = async (data: SignupFormData) => {
     console.log(data, "this is input data");
+    data.role="USER"
     // Simulated API call
     setLoading(true); // Start loading
     try {
@@ -154,8 +156,8 @@ const SignupPage: React.FC = () => {
         localStorage.setItem("jwt", result?.data?.data.accessToken);
 
         dispatch(storeUserInfo(result?.data?.user));
-        router.push("/");
-        window.location.reload();
+        // router.push("/");
+        // window.location.reload();
       }
     } catch (error) {
       console.log(error);
