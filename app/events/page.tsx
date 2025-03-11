@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGetAllEventQuery } from "@/redux/api/eventApi";
 import Link from "next/link";
 
 const mockEvents = [
@@ -77,15 +78,21 @@ const mockEvents = [
   },
 ];
 
+
+
+
 const EventPage = () => {
+  const { data: allEvents, isLoading } = useGetAllEventQuery(undefined);
+
+  console.log(allEvents, 'this is all events')
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">
       <h1 className="text-2xl font-bold mb-6 text-center">Upcoming Events</h1>
-      {mockEvents.length === 0 ? (
+      {allEvents?.data.length === 0 ? (
         <p className="text-center">No events found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl px-4 md:px-8">
-          {mockEvents.map((event) => (
+          {allEvents?.data.map((event) => (
             <Card
               key={event.id}
               className="shadow-md flex flex-col justify-between h-full"

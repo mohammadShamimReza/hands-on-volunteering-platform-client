@@ -27,6 +27,20 @@ const UserEventApi = baseApi.injectEndpoints({
       }),
       providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
     }),
+    getAllEvent: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Event[];
+      },
+      void
+    >({
+      query: () => ({
+        url: `event/`,
+      }),
+      // providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
+    }),
 
     getAllUserEventByUser: builder.query<
       {
@@ -114,6 +128,7 @@ const UserEventApi = baseApi.injectEndpoints({
 export const {
   useCreateEventMutation,
   useGetAllRegisteredEventsQuery,
+  useGetAllEventQuery,
   useGetAllUserEventQuery,
   useGetAllUserEventByUserQuery,
   useGetUserEventByIdQuery,
