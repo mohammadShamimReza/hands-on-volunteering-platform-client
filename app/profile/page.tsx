@@ -1,24 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Select from "react-select";
 import Image from "next/image";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useGetAllRegisteredEventsQuery, useGetAllUserEventQuery } from "@/redux/api/eventApi";
+import { useGetAllRegisteredTeamsQuery } from "@/redux/api/teamApi";
+import { Loader2 } from "lucide-react";
+import { User } from "@/type/Index";
+import { useUpdateUserMutation } from "@/redux/api/userApi";
+import Link from "next/link";
 
-interface User {
-  fullName: string;
-  email: string;
-  bio: string;
-  profileImage: string;
-  skills: string[];
-  causes: string[];
-  eventsJoined: { id: string; title: string; date: string }[];
-  teams: { id: string; name: string }[];
-}
+
 
 const skillsOptions = [
   "Academic",
@@ -72,32 +69,46 @@ const causesOptions = [
 
 
 const ProfilePage: React.FC = () => {
-  const [user, setUser] = useState<User>({
-    fullName: "John Doe",
-    email: "johndoe@example.com",
-    bio: "Passionate about volunteering and making an impact.",
-    profileImage: "/default-avater.png",
-    skills: ["Communication", "Management"],
-    causes: ["Education", "Environment"],
-    eventsJoined: [
-      { id: "1", title: "Beach Cleanup Drive", date: "2025-04-15" },
-      { id: "2", title: "Food Distribution", date: "2025-05-02" },
-    ],
-    teams: [
-      { id: "1", name: "Green Warriors" },
-      { id: "2", name: "Food for All" },
-    ],
+
+  const userData = useAppSelector((state) => state.auth.userInfo)
+  const {data: getUserAllregisteredEvent, isLoading: eventLoading } = useGetAllRegisteredEventsQuery({ userId: userData.id })
+  const  {data: getUserAllRegisteredTeam, isLoading: teamLoading } = useGetAllRegisteredTeamsQuery({
+    userId: userData.id,
   });
 
+   const [updatedUser, setUpdatedUser] = useState<  Partial<User>>({ bio: userData.bio, fullName: userData.fullName, skills: userData.skills, causes: userData.causes });
+
+   useEffect(() => {
+      if (userData) {
+       setUpdatedUser({
+         bio: userData.bio,
+         fullName: userData.fullName,
+         skills: userData.skills,
+         causes: userData.causes,
+       });
+      }
+    }, [userData]);
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [updatedUser, setUpdatedUser] = useState<User>({ ...user });
+ 
+  
     
 
-    const userData = useAppSelector((state) => state.auth.userInfo)
     
+  const [updateUser, { isLoading: updateUserLoading }] = useUpdateUserMutation();
 
-  const handleSave = () => {
-    setUser(updatedUser);
+  const handleSave = async () => {
+    console.log(updatedUser, "update user data");
+try {
+  const result = await updateUser({
+    id: userData.id,
+    body: updatedUser, // Pass the correct object
+  }).unwrap();
+  console.log(result, 'this is update user')
+} catch (error) {
+  
+}
+    // setUser(updatedUser);
     setIsEditing(false);
   };
 
@@ -138,7 +149,7 @@ const ProfilePage: React.FC = () => {
                 isMulti
                 options={skillsOptions}
                 value={skillsOptions.filter((option) =>
-                  updatedUser.skills.includes(option.value)
+                  updatedUser?.skills?.includes(option.value)
                 )}
                 onChange={(selected) =>
                   setUpdatedUser({
@@ -152,7 +163,7 @@ const ProfilePage: React.FC = () => {
                 isMulti
                 options={causesOptions}
                 value={causesOptions.filter((option) =>
-                  updatedUser.causes.includes(option.value)
+                  updatedUser?.causes?.includes(option.value)
                 )}
                 onChange={(selected) =>
                   setUpdatedUser({
@@ -162,7 +173,9 @@ const ProfilePage: React.FC = () => {
                 }
                 placeholder="Select Causes"
               />
-              <Button onClick={handleSave}>Save Changes</Button>
+              <Button onClick={handleSave} disabled={updateUserLoading}>
+                {updateUserLoading ? "Saving..." : "Save Changes"}
+              </Button>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
@@ -173,7 +186,13 @@ const ProfilePage: React.FC = () => {
               <p className="text-sm font-semibold">
                 Causes: {userData.causes.join(", ")}
               </p>
-              <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+              <Button
+                onClick={() => setIsEditing(true)}
+                disabled={updateUserLoading}
+              >
+                {" "}
+                {updateUserLoading ? "Updating..." : "Edit Profile"}
+              </Button>
             </div>
           )}
         </CardContent>
@@ -197,25 +216,42 @@ const ProfilePage: React.FC = () => {
 
       {/* Volunteer History */}
       <section className="max-w-2xl w-full mt-6">
-        <h2 className="text-xl font-bold mb-4">Volunteer History</h2>
-        <div className="bg-gray-100 p-4 rounded-md">
-          {user.eventsJoined.map((event) => (
-            <p key={event.id} className="text-sm mb-2">
-              ✔ {event.title} - {new Date(event.date).toDateString()}
-            </p>
-          ))}
+        <h2 className="text-xl font-bold mb-4">Registerd Events</h2>
+        <div className="border p-4 rounded-md">
+          {eventLoading ? (
+            <Loader2 />
+          ) : (
+            getUserAllregisteredEvent?.data?.map((userEvent) => (
+              <Link
+                href={`/events/${userEvent.id}`}
+                key={userEvent.id}
+                className="text-sm mb-2 hover:bg-gray-200 hover:dark:border-gray-600"
+              >
+                ✔ {userEvent.title} -{" "}
+                {new Date(userEvent.endDateTime).toDateString()}
+              </Link>
+            ))
+          )}
         </div>
       </section>
 
       {/* Joined Teams */}
       <section className="max-w-2xl w-full mt-6">
         <h2 className="text-xl font-bold mb-4">Joined Teams</h2>
-        <div className="bg-gray-100 p-4 rounded-md">
-          {user.teams.map((team) => (
-            <p key={team.id} className="text-sm mb-2">
-              🔹 {team.name}
-            </p>
-          ))}
+        <div className="border p-4 rounded-md">
+          {teamLoading ? (
+            <Loader2 />
+          ) : (
+            getUserAllRegisteredTeam?.data?.map((team) => (
+              <Link
+                href={`/teams/${team.id}`}
+                key={team.id}
+                className="text-sm mb-2  hover:bg-gray-200 hover:dark:border-gray-600"
+              >
+                🔹 {team.name}
+              </Link>
+            ))
+          )}
         </div>
       </section>
     </div>

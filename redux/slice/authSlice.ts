@@ -1,37 +1,37 @@
+import { User } from "@/type/Index";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface UserInfo {
-  id: string;
-  fullName: string;
-  email: string;
-  password: string;
-  bio: string;
-  skills: string[];
-  causes: string[];
-  role: "USER" | "ADMIN"; // Assuming roles can be USER or ADMIN
-  profileImage: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 interface AuthState {
-  userInfo: UserInfo;
+  userInfo: User;
   authToken: string | null;
 }
 
 const initialState: AuthState = {
   userInfo: {
     id: "", // Empty (will be assigned upon creation)
-    fullName: " User", // Default name
+    fullName: "User", // Default name
     email: "example@example.com", // Placeholder email
     password: "", // Empty (should be securely handled)
     bio: "", // Empty (user can update it)
     skills: [], // Empty (user can add skills)
     causes: [], // Empty (user can add causes)
     role: "USER", // Defaults to normal user
-    profileImage: null, // Empty (user can upload)
+    profileImage:'', // Empty (user can upload)
     createdAt: new Date().toISOString(), // Default to current timestamp
     updatedAt: new Date().toISOString(),
+
+    // Add missing properties with empty arrays or null
+    eventsCreated: [],
+    eventsJoined: [],
+    teams: [],
+    contributions: [],
+    post: [],
+    helpResponses: [],
+    teamsCreated: [],
+    leaderboard: [],
+    certificates: [],
   },
   authToken: null,
 };
@@ -40,7 +40,7 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    storeUserInfo: (state, action: PayloadAction<UserInfo>) => {
+    storeUserInfo: (state, action: PayloadAction<User>) => {
       state.userInfo = action.payload;
     },
     storeAuthToken: (state, action: PayloadAction<string>) => {

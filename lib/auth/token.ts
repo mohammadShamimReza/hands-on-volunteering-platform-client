@@ -16,7 +16,7 @@ export const getTokenFromCookie = () => {
   return Cookies.get("jwt") ;
 };
 
-export const removeToken = () => {
+export const removeTokenFromCookies = () => {
   Cookies.remove("jwt");
   localStorage.removeItem("jwt");
 };

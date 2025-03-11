@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getTokenFromCookie } from "@/lib/auth/token";
+import { getTokenFromCookie, removeTokenFromCookies } from "@/lib/auth/token";
 import { useGetUserInfoQuery } from "@/redux/api/authApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { removeAuthToken, storeAuthToken, storeUserInfo } from "@/redux/slice/authSlice";
@@ -37,12 +37,18 @@ const Navbar = () => {
 
   const { data: userData, isLoading } = useGetUserInfoQuery({ undefined });
 
+  useEffect(() => {
+    if (userData) {
+      dispatch(storeUserInfo(userData?.data));
+    }
+  }, [userData, dispatch]);
+  
   const [authenticated, setAuthenticated] = useState<boolean>(false);
 
   const authTokenFromRedux = useAppSelector((state) => state.auth.authToken);
 
 
-  const removeTokenFromCookies = useCallback(() => {
+  const removeTokenCookies = useCallback(() => {
     return removeTokenFromCookies();
   }, []);
   // Store token in Redux if available
@@ -53,11 +59,7 @@ const Navbar = () => {
   }, [tokenFromLocalStorage, dispatch]);
 
   // Store user data in Redux when available
-  useEffect(() => {
-    if (userData) {
-      dispatch(storeUserInfo(userData?.data));
-    }
-  }, [userData, dispatch]);
+
 
   const authToken = getTokenFromCookie() || authTokenFromRedux;
   useEffect(() => {
@@ -84,7 +86,8 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    removeTokenFromCookies();
+    console.log('log out')
+    removeTokenCookies();
     dispatch(removeAuthToken());
 
     if (typeof window !== "undefined") {

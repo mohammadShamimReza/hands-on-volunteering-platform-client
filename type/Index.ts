@@ -1,185 +1,152 @@
-export interface Nurse {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  phone: number;
-  address: string;
-  profile_image: string | null;
-  role: string;
-  roomId: string | null;
-
-  room: {
-    roomNumber: number;
-  };
-}
-
-export interface Staff {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  phone: number;
-  address: string;
-  profile_image: string | null;
-  role: string;
-  roomId: string | null;
-  room: {
-    roomNumber: number;
-  };
-}
-
 export interface User {
-  id: number;
-  name: string;
+  id: string;
+  fullName: string;
   email: string;
   password: string;
-  phone: number;
-  address: string;
-  profile_image: string | null;
-  role: string;
-  roomId: string | null;
-  payment: boolean;
+  bio: string;
+  skills: string[];
+  causes: string[];
+  role: "USER" | "ADMIN" | "ORG";
+  profileImage: string | null;
+  createdAt: string;
+  updatedAt: string;
+  eventsCreated: Event[];
+  eventsJoined: UserEvent[];
+  teams: TeamMember[];
+  contributions: Contribution[];
+  post: Post[];
+  helpResponses: Comment[];
+  teamsCreated: Team[];
+  leaderboard: Leaderboard[];
+  certificates: Certificate[];
 }
 
-export interface Admin {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  phone: number;
-  address: string;
-  profile_image: string | null;
-  role: string;
-  roomId: string | null;
-}
-
-export interface Doctor {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  phone: number;
-  address: string;
-  role: string;
-  designation: string;
-  passingYear: string;
-  appointments?: Appointment[];
-  serviceId: number;
-  Service: Service;
-}
-
-export interface Notice {
-  id: number;
+// Event Model
+export interface Event {
+  id: string;
   title: string;
-  content: string;
-  expiryDate: string;
-  createdAt: Date;
-  updatedAt: Date;
+  description?: string;
+  date: string;
+  time?: string;
+  location?: string;
+  category: string;
+  endDateTime: string;
+  requiredMembers: number;
+  createdById: string;
+  visibility: "PUBLIC" | "PRIVATE";
+  createdAt: string;
+  updatedAt: string;
+  createdBy: User;
+  participants: UserEvent[];
+  contributions: Contribution[];
 }
 
-export interface Service {
-  id: number;
-  serviceName: string;
-  description: string;
-  price: number;
-  serviceType: string;
-  bodyPart: string;
+// User Event Model
+export interface UserEvent {
+  id: string;
+  userId: string;
+  eventId: string;
+  status: "JOINED" | "COMPLETED" | "CANCELLED";
+  joinedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  user: User;
+  event: Event;
 }
 
-export interface Room {
-  id: number;
-  roomNumber: string;
-  needNurseAndStaff: number;
-  nurses: Nurse[] | [];
-  staff: Staff[] | [];
+// Post Model
+export interface Post {
+  id: string;
+  title: string;
+  description?: string;
+  urgency: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+  status: "OPEN" | "CLOSED";
+  createdById?: string;
+  createdByTeamId?: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: User;
+  createdByTeam?: Team;
+  responses: Comment[];
 }
 
-export interface Appointment {
-  id: number;
-  doctorId: number;
-  doctor: Doctor;
-  price: number;
-  patientId: number;
-  patient: User;
-  status: string;
-  appointmentDate: Date;
-  serviceId: number;
-  Service: Service;
-  prescription: string;
-  Billing: BillingAppointment;
-  DiagnosticAppointment: DiagnosticAppointment[];
-  LabAppointment: LaboratoryAppointment[];
-  Pharmacy: PharmacyAppointment[];
+// Comment Model
+export interface Comment {
+  id: string;
+  userId: string;
+  postId: string;
+  message?: string;
+  createdAt: string;
+  updatedAt: string;
+  post: Post;
+  user: User;
 }
 
-export interface BillingAppointment {
-  id: number;
-  userId: number;
-  totalAmount: number;
-  paidAmount: number;
-  dueAmount: number;
-  paymentStatus: string;
-}
-
-export interface Pharmacy {
-  id: number;
+// Team Model
+export interface Team {
+  id: string;
   name: string;
-  stockQuantity: number;
-  unitPrice: number;
-  image: string;
-  expiryDate: string; // ISO date string, corresponds to DateTime in Prisma
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  appointments?: Appointment[]; // Optional, linked appointments
+  description?: string;
+  type: "PUBLIC" | "PRIVATE";
+  createdById: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: User;
+  members: TeamMember[];
 }
 
-export interface Laboratory {
-  id: number;
-  testName: string;
-  price: number;
-  appointmentId: number;
-  testDate: string;
-  result: string;
+// Team Member Model
+export interface TeamMember {
+  id: string;
+  userId: string;
+  teamId: string;
+  joinedAt: string;
+  user: User;
+  team: Team;
 }
 
-export interface Inventory {
-  itemName: string; // Name of the inventory item
-  quantity: number; // Quantity of the item in stock
-  price: number; // Price of the inventory item
-  category: string; // Allowed categories
-  purchaseDate: string; // Date the item was purchased
-  status: string;
+// Contribution Model
+export interface Contribution {
+  id: string;
+  userId: string;
+  eventId?: string;
+  hours?: number;
+  points?: number;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user: User;
+  event?: Event;
+  validations: Verification[];
 }
 
-export interface Diagnostic {
-  id: number;
-  diagnosticName: string; // Name of the diagnostic test
-  price: number; // Cost of the diagnostic test
+// Verification Model
+export interface Verification {
+  id: string;
+  contributionId: string;
+  verifierId: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  createdAt: string;
+  contribution: Contribution;
 }
 
-export interface DiagnosticAppointment {
-  id: number;
-  diagnosticId: number;
-  appointmentId: number;
-  result?: string;
-  status: string;
-  diagnostic: Diagnostic;
+// Leaderboard Model
+export interface Leaderboard {
+  id: string;
+  userId: string;
+  rank: number;
+  points: number;
+  hours: number;
+  createdAt: string;
+  updatedAt: string;
+  user: User;
 }
 
-export interface LaboratoryAppointment {
-  id: number;
-  laboratoryId: number;
-  appointmentId: number;
-  result?: string;
-  status: string;
-  testDate: string;
-  laboratory: Laboratory;
-}
-
-export interface PharmacyAppointment {
-  id: number;
-  pharmacyId: number;
-  appointmentId: number;
-  pharmacy: Pharmacy;
+// Certificate Model
+export interface Certificate {
+  id: string;
+  userId: string;
+  level: "BRONZE" | "SILVER" | "GOLD";
+  issuedAt: string;
+  user: User;
 }
