@@ -5,9 +5,9 @@ const USEREVENT = "/userEvent";
 
 const UserEventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createUserEvent: builder.mutation<void, Partial<UserEvent>>({
+    createEvent: builder.mutation<void, Partial<Event>>({
       query: (body) => ({
-        url: `${USEREVENT}/create`,
+        url: `event/create`,
         method: "POST",
         body,
       }),
@@ -27,6 +27,22 @@ const UserEventApi = baseApi.injectEndpoints({
       }),
       providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
     }),
+
+    getAllUserEventByUser: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Event[];
+      },
+      { userId: string } // Query parameter
+    >({
+      query: ({ userId }) => ({
+        url: `/event/get-event-created-user/${userId}`, // Adjust API route accordingly
+      }),
+      providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
+    }),
+
     getAllRegisteredEvents: builder.query<
       {
         statusCode: number;
@@ -71,7 +87,17 @@ const UserEventApi = baseApi.injectEndpoints({
         { type: "UserEvent", id },
       ], // Invalidate both the list and the specific USEREVENT entry
     }),
-    deleteUserEvent: builder.mutation<void, number>({
+    deleteEvent: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `event/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        "getUserEvent",
+        { type: "UserEvent", id },
+      ], // Invalidate both the list and the specific USEREVENT entry
+    }),
+    deleteUserEvent: builder.mutation<void, string>({
       query: (id) => ({
         url: `${USEREVENT}/${id}`,
         method: "DELETE",
@@ -86,10 +112,12 @@ const UserEventApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreateUserEventMutation,
+  useCreateEventMutation,
   useGetAllRegisteredEventsQuery,
   useGetAllUserEventQuery,
+  useGetAllUserEventByUserQuery,
   useGetUserEventByIdQuery,
   useUpdateUserEventMutation,
+  useDeleteEventMutation,
   useDeleteUserEventMutation,
 } = UserEventApi;

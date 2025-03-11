@@ -1,168 +1,338 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppSelector } from "@/redux/hooks";
+import {
+  useCreateEventMutation,
+  useDeleteEventMutation,
+  useGetAllUserEventByUserQuery,
+} from "@/redux/api/eventApi";
+import { Loader2, Minus, Plus } from "lucide-react";
 
 interface Event {
-  id: string;
+  id?: string;
   title: string;
   description?: string;
   date: string;
+  endDateTime: string;
   time?: string;
   location?: string;
   category: string;
   requiredMembers: number;
+  visibility: "PUBLIC" | "PRIVATE";
+  createdById: string;
 }
 
-const demoEvents: Event[] = [
-  {
-    id: "1",
-    title: "Beach Cleanup Drive",
-    description: "Join us in cleaning up the beach to protect marine life.",
-    date: "2025-04-15",
-    time: "10:00 AM",
-    location: "Santa Monica Beach, CA",
-    category: "Environment",
-    requiredMembers: 50,
-  },
-  {
-    id: "2",
-    title: "Food Distribution for Homeless",
-    description:
-      "Help us distribute food to those in need in the downtown area.",
-    date: "2025-05-02",
-    time: "12:00 PM",
-    location: "Downtown Community Center, NY",
-    category: "Community",
-    requiredMembers: 30,
-  },
-  {
-    id: "3",
-    title: "Coding Workshop for Kids",
-    description:
-      "A fun and interactive workshop teaching kids the basics of coding.",
-    date: "2025-06-10",
-    time: "9:00 AM",
-    location: "Tech Learning Hub, SF",
-    category: "Education",
-    requiredMembers: 20,
-  },
+const categories = [
+  "Animal",
+  "Arts",
+  "Children",
+  "Community",
+  "Crisis",
+  "Culture",
+  "Disability",
+  "Disaster",
+  "Education",
+  "Elderly",
+  "Environment",
+  "Health",
+  "Human",
+  "Humanitarian",
+  "International",
+  "Poverty",
+  "Rights",
+  "Social",
+  "Sports",
+  "Technology",
 ];
 
 const ManageEventsPage: React.FC = () => {
+  const [createEventButton, setCreateEventButton] = useState(false);
   const userData = useAppSelector((state) => state.auth.userInfo);
-  const [events, setEvents] = useState<Event[]>(demoEvents);
+  const { data: userCreateEvent, isLoading: userCreateEventLoading } =
+    useGetAllUserEventByUserQuery({ userId: userData.id });
+
+  const [createEvent, { isLoading: eventCreateLoading }] =
+    useCreateEventMutation();
+
+  
+   const [deleteEvent, { isLoading: eventDeleteLoading }] =
+     useDeleteEventMutation();
+  
+  
+  const [events, setEvents] = useState<Event[]>();
+
+  useEffect(() => {
+    if (userCreateEvent) {
+      setEvents(userCreateEvent.data as Event[]);
+    }
+  }, [userCreateEvent]);
+
   const [newEvent, setNewEvent] = useState<Event>({
     id: "",
     title: "",
     description: "",
     date: "",
+    endDateTime: "",
     time: "",
     location: "",
     category: "",
     requiredMembers: 1,
+    visibility: "PUBLIC", // Static value
+    createdById: userData.id, // Automatically set from logged-in user
   });
 
-  const handleCreateEvent = () => {
-    if (!newEvent.title || !newEvent.date) return;
-    setEvents([...events, { ...newEvent, id: Date.now().toString() }]);
-    setNewEvent({
-      id: "",
-      title: "",
-      description: "",
-      date: "",
-      time: "",
-      location: "",
-      category: "",
-      requiredMembers: 1,
-    });
+
+
+  /**
+   * Handles creating a new event.
+   */
+  const handleCreateEvent = async () => {
+    console.log("Creating event...");
+
+    if (
+      !newEvent.title ||
+      !newEvent.description ||
+      !newEvent.date ||
+      !newEvent.endDateTime ||
+      !newEvent.location ||
+      !newEvent.category ||
+      newEvent.requiredMembers < 1
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    delete newEvent.id
+
+    try {
+      const formattedEvent = {
+        ...newEvent,
+        createdById: userData.id, // Ensure user ID is assigned
+        date: new Date(newEvent.date).toISOString(), // Convert to ISO format
+        endDateTime: new Date(newEvent.endDateTime).toISOString(), // Convert to ISO format
+      };
+
+      const result = await createEvent(formattedEvent).unwrap();
+      alert("Event created successfully!");
+      console.log(result);
+
+      // Reset form fields after event creation
+      setNewEvent({
+        id: "",
+        title: "",
+        description: "",
+        date: "",
+        endDateTime: "",
+        time: "",
+        location: "",
+        category: "",
+        requiredMembers: 1,
+        visibility: "PUBLIC",
+        createdById: userData.id,
+      });
+
+      setCreateEventButton(false); // Close form after creation
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert("Failed to create event. Please try again.");
+    }
   };
 
-  const handleDeleteEvent = (id: string) => {
-    setEvents(events.filter((event) => event.id !== id));
+  /**
+   * Handles deleting an event.
+   */
+  const handleDeleteEvent = async (id: string) => {
+
+    
+    if (confirm("Are you sure you want to delete this event?")) {
+      try {
+        const result = await deleteEvent(id)
+        console.log(result)
+      } catch (error) {
+              alert("Failed to delete event. Please try again.");
+
+      }
+    }
   };
 
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">
       <h1 className="text-3xl font-bold mb-6">Manage Events</h1>
-      <Card className="max-w-2xl w-full mb-6">
-        <CardHeader>
-          <CardTitle>Create New Event</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <Input
-            type="text"
-            placeholder="Event Title"
-            value={newEvent.title}
-            onChange={(e) =>
-              setNewEvent({ ...newEvent, title: e.target.value })
-            }
-          />
-          <Textarea
-            placeholder="Event Description"
-            value={newEvent.description}
-            onChange={(e) =>
-              setNewEvent({ ...newEvent, description: e.target.value })
-            }
-          />
-          <Input
-            type="date"
-            value={newEvent.date}
-            onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-          />
-          <Input
-            type="text"
-            placeholder="Location"
-            value={newEvent.location}
-            onChange={(e) =>
-              setNewEvent({ ...newEvent, location: e.target.value })
-            }
-          />
-          <Input
-            type="number"
-            placeholder="Required Members"
-            value={newEvent.requiredMembers}
-            onChange={(e) =>
-              setNewEvent({
-                ...newEvent,
-                requiredMembers: Number(e.target.value),
-              })
-            }
-          />
-          <Button onClick={handleCreateEvent}>Create Event</Button>
-        </CardContent>
-      </Card>
 
-      <h2 className="text-xl font-bold mb-4">Your Events</h2>
+      {/* Event Creation Form */}
+      {createEventButton && (
+        <Card className="max-w-2xl w-full mb-6">
+          <CardHeader>
+            <CardTitle>Create New Event</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Event Title *
+              </label>
+              <Input
+                type="text"
+                placeholder="Enter event title"
+                value={newEvent.title}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, title: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Event Description *
+              </label>
+              <Textarea
+                placeholder="Enter event description"
+                value={newEvent.description}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, description: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Start Date *
+              </label>
+              <Input
+                type="datetime-local"
+                value={newEvent.date}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, date: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Date *
+              </label>
+              <Input
+                type="datetime-local"
+                value={newEvent.endDateTime}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, endDateTime: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Location *
+              </label>
+              <Input
+                type="text"
+                placeholder="Enter location"
+                value={newEvent.location}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, location: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category *
+              </label>
+              <select
+                className="border p-2 rounded-md w-full"
+                value={newEvent.category}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, category: e.target.value })
+                }
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Required Members *
+              </label>
+              <Input
+                type="number"
+                placeholder="Enter number of required members"
+                value={newEvent.requiredMembers}
+                onChange={(e) =>
+                  setNewEvent({
+                    ...newEvent,
+                    requiredMembers: Number(e.target.value),
+                  })
+                }
+              />
+            </div>
+
+            <Button onClick={handleCreateEvent} disabled={eventCreateLoading}>
+              {eventCreateLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Create Event"
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      <Button
+        onClick={() => setCreateEventButton(!createEventButton)}
+        className="mb-2"
+      >
+        {createEventButton ? <Minus /> : <Plus />}{" "}
+        {createEventButton ? "Close" : "Create Event"}
+      </Button>
+
+      <h2 className="text-xl font-bold mb-4">Your Created Events</h2>
       <div className="w-full max-w-2xl">
-        {events.length === 0 ? (
-          <p className="text-center text-gray-500">No events created yet.</p>
+        {userCreateEventLoading ? (
+          <Loader2 />
         ) : (
-          events.map((event) => (
+          events?.map((event) => (
             <Card key={event.id} className="mb-4">
               <CardHeader>
                 <CardTitle>{event.title}</CardTitle>
+                <p className="text-sm text-gray-500">
+                  {new Date(event.date).toDateString()} - {event.time || "TBD"}
+                </p>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700">{event.description}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(event.date).toDateString()}
+                <p className="text-gray-700 mb-2">
+                  {event.description
+                    ? event.description
+                    : "No description provided."}
                 </p>
-                <p className="text-sm">Location: {event.location || "N/A"}</p>
-                <p className="text-sm">
-                  Required Members: {event.requiredMembers}
+                <p className="text-sm font-semibold">
+                  📍 Location: {event.location || "Not specified"}
                 </p>
-                <Button
-                  onClick={() => handleDeleteEvent(event.id)}
-                  variant="destructive"
-                  className="mt-2"
-                >
-                  Delete
-                </Button>
+                <p className="text-sm font-semibold">
+                  📂 Category: {event.category}
+                </p>
+                <p className="text-sm font-semibold">
+                  👥 Required Members: {event.requiredMembers}
+                </p>
+                <p className="text-sm font-semibold">
+                  🔒 Visibility: {event.visibility}
+                </p>
+
+                <div className="flex gap-4 mt-4">
+                  <Button
+                    onClick={() => handleDeleteEvent(event?.id !!)}
+                    variant="destructive"
+                  >
+                    Delete
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))
