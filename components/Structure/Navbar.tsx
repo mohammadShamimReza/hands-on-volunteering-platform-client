@@ -37,6 +37,12 @@ const Navbar = () => {
 
   const { data: userData, isLoading } = useGetUserInfoQuery({ undefined });
 
+  useEffect(() => {
+    if (userData) {
+      dispatch(storeUserInfo(userData?.data));
+    }
+  }, [userData, dispatch]);
+  
   const [authenticated, setAuthenticated] = useState<boolean>(false);
 
   const authTokenFromRedux = useAppSelector((state) => state.auth.authToken);
@@ -53,11 +59,7 @@ const Navbar = () => {
   }, [tokenFromLocalStorage, dispatch]);
 
   // Store user data in Redux when available
-  useEffect(() => {
-    if (userData) {
-      dispatch(storeUserInfo(userData?.data));
-    }
-  }, [userData, dispatch]);
+
 
   const authToken = getTokenFromCookie() || authTokenFromRedux;
   useEffect(() => {

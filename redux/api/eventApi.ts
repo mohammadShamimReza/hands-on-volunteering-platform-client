@@ -1,4 +1,4 @@
-import { UserEvent } from "@/type/Index";
+import { Event, UserEvent } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const USEREVENT = "/userEvent";
@@ -18,7 +18,7 @@ const UserEventApi = baseApi.injectEndpoints({
         statusCode: number;
         success: boolean;
         message: string;
-        data: UserEvent[];
+        data: Event[];
       },
       void
     >({
@@ -27,6 +27,22 @@ const UserEventApi = baseApi.injectEndpoints({
       }),
       providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
     }),
+    getAllRegisteredEvents: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Event[];
+      },
+      { userId: string } // Query parameter
+    >({
+      query: ({ userId }) => ({
+        url: `/event/get-registered-event-by-user/${userId}`, // Adjust API route accordingly
+        method: "GET",
+      }),
+      providesTags: ["UserEvents"], // Enables caching & refetching
+    }),
+
     getUserEventById: builder.query<
       {
         statusCode: number;
@@ -71,6 +87,7 @@ const UserEventApi = baseApi.injectEndpoints({
 
 export const {
   useCreateUserEventMutation,
+  useGetAllRegisteredEventsQuery,
   useGetAllUserEventQuery,
   useGetUserEventByIdQuery,
   useUpdateUserEventMutation,

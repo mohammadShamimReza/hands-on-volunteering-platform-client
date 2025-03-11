@@ -3,11 +3,11 @@ export interface User {
   fullName: string;
   email: string;
   password: string;
-  bio?: string;
+  bio: string;
   skills: string[];
   causes: string[];
   role: "USER" | "ADMIN" | "ORG";
-  profileImage?: string | null;
+  profileImage: string | null;
   createdAt: string;
   updatedAt: string;
   eventsCreated: Event[];

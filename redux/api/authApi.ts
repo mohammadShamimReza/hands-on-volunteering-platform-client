@@ -31,6 +31,7 @@ const authApi = baseApi.injectEndpoints({
       transformErrorResponse(baseQueryReturnValue) {
         return baseQueryReturnValue.data;
       },
+       providesTags: ["User"],
     }),
     forgetPassword: builder.mutation({
       query: (body) => ({
