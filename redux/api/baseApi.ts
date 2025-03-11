@@ -17,10 +17,5 @@ export const baseApi = createApi({
     },
   }),
   endpoints: () => ({}),
-  tagTypes: [
-    "createUser",
-    
-    "User",
-    
-  ],
+  tagTypes: ["createUser", "getUser", "User", "getUserEvent", "UserEvent"],
 });

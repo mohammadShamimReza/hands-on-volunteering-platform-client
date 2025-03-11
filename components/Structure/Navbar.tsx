@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getTokenFromCookie } from "@/lib/auth/token";
+import { getTokenFromCookie, removeTokenFromCookies } from "@/lib/auth/token";
 import { useGetUserInfoQuery } from "@/redux/api/authApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { removeAuthToken, storeAuthToken, storeUserInfo } from "@/redux/slice/authSlice";
@@ -42,7 +42,7 @@ const Navbar = () => {
   const authTokenFromRedux = useAppSelector((state) => state.auth.authToken);
 
 
-  const removeTokenFromCookies = useCallback(() => {
+  const removeTokenCookies = useCallback(() => {
     return removeTokenFromCookies();
   }, []);
   // Store token in Redux if available
@@ -84,7 +84,8 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    removeTokenFromCookies();
+    console.log('log out')
+    removeTokenCookies();
     dispatch(removeAuthToken());
 
     if (typeof window !== "undefined") {

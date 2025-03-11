@@ -93,7 +93,8 @@ const ProfilePage: React.FC = () => {
     const [updatedUser, setUpdatedUser] = useState<User>({ ...user });
     
 
-    const userData = useAppSelector((state) => state.auth.userInfo)
+  const userData = useAppSelector((state) => state.auth.userInfo)
+  console.log(userData, 'user Data')
     
 
   const handleSave = () => {

@@ -33,6 +33,7 @@ const loginSchema = z.object({
       /(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
       "Password must contain a letter, a number, and a special character"
     ),
+  role: z.string().optional(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -66,6 +67,8 @@ export default function LoginPage() {
     if (data.email !== "" && data.password !== "") {
       try {
         setLoading(true);
+        data.role = "USER";
+        console.log(data);
         const result = await loginUser(data);
         console.log(result, "this is login result");
 
@@ -87,7 +90,6 @@ export default function LoginPage() {
           setSelectedMenu("Overview");
 
           router.push("/");
-          window.location.reload();
         }
       } catch (error) {
         console.log(error);
