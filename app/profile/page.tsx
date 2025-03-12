@@ -76,6 +76,7 @@ const ProfilePage: React.FC = () => {
     userId: userData.id,
   });
 
+
    const [updatedUser, setUpdatedUser] = useState<  Partial<User>>({ bio: userData.bio, fullName: userData.fullName, skills: userData.skills, causes: userData.causes });
 
    useEffect(() => {

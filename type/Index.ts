@@ -15,7 +15,7 @@ export interface User {
   teams: TeamMember[];
   contributions: Contribution[];
   post: Post[];
-  helpResponses: Comment[];
+  comments: Comment[];
   teamsCreated: Team[];
   leaderboard: Leaderboard[];
   certificates: Certificate[];

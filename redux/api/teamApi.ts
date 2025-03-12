@@ -5,25 +5,25 @@ const TEAM = "/userTeam";
 
 const TeamApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createUserTeam: builder.mutation<void, Partial<Team>>({
+    createTeam: builder.mutation<void, Partial<Team>>({
       query: (body) => ({
-        url: `${TEAM}/create`,
+        url: `team/create`,
         method: "POST",
         body,
       }),
       invalidatesTags: ["getTeam"], // Invalidate the list to refetch diagonostics
     }),
-    getAllUserTeam: builder.query<
+    getAllTeamByUserId: builder.query<
       {
         statusCode: number;
         success: boolean;
         message: string;
         data: Team[];
       },
-      void
+      { userId: string }
     >({
-      query: () => ({
-        url: `${TEAM}/`,
+      query: ({ userId }) => ({
+        url: `team/user/${userId}`,
       }),
       providesTags: ["getTeam"], // Provides tag for refetching when invalidated
     }),
@@ -70,9 +70,9 @@ const TeamApi = baseApi.injectEndpoints({
         ], // Invalidate both the list and the specific TEAM entry
       }
     ),
-    deleteUserTeam: builder.mutation<void, number>({
+    deleteTeam: builder.mutation<void, string>({
       query: (id) => ({
-        url: `${TEAM}/${id}`,
+        url: `team/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
@@ -85,10 +85,10 @@ const TeamApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreateUserTeamMutation,
+  useCreateTeamMutation,
   useGetAllRegisteredTeamsQuery,
-  useGetAllUserTeamQuery,
+  useGetAllTeamByUserIdQuery,
   useGetUserTeamByIdQuery,
   useUpdateUserTeamMutation,
-  useDeleteUserTeamMutation,
+  useDeleteTeamMutation,
 } = TeamApi;
