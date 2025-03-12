@@ -333,8 +333,10 @@ const ManageEventsPage: React.FC = () => {
                     Delete
                   </Button>
                 </div>
+                
               </CardContent>
             </Card>
+            
           ))
         )}
       </div>
