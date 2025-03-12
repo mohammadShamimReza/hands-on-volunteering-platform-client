@@ -13,6 +13,19 @@ const TeamApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["getTeam"], // Invalidate the list to refetch diagonostics
     }),
+    getAllTeam: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Team[];
+      }, void
+    >({
+      query: () => ({
+        url: `team`,
+      }),
+      providesTags: ["getTeam"], // Provides tag for refetching when invalidated
+    }),
     getAllTeamByUserId: builder.query<
       {
         statusCode: number;
@@ -86,6 +99,7 @@ const TeamApi = baseApi.injectEndpoints({
 
 export const {
   useCreateTeamMutation,
+  useGetAllTeamQuery,
   useGetAllRegisteredTeamsQuery,
   useGetAllTeamByUserIdQuery,
   useGetUserTeamByIdQuery,
