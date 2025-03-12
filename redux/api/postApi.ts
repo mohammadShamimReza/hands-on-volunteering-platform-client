@@ -1,7 +1,7 @@
 import { Event, UserEvent } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
-const USEREVENT = "/userEvent";
+const POST = "/post";
 
 const UserEventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -31,7 +31,7 @@ const UserEventApi = baseApi.injectEndpoints({
       void
     >({
       query: () => ({
-        url: `${USEREVENT}/`,
+        url: `${POST}/`,
       }),
       providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
     }),
@@ -98,9 +98,9 @@ const UserEventApi = baseApi.injectEndpoints({
       { id: number }
     >({
       query: ({ id }) => ({
-        url: `${USEREVENT}/${id}`,
+        url: `${POST}/${id}`,
       }),
-      providesTags: ['getUserEvent'], // Tag specific to USEREVENT ID
+      providesTags: ['getUserEvent'], // Tag specific to POST ID
     }),
     getEventById: builder.query<
       {
@@ -114,21 +114,21 @@ const UserEventApi = baseApi.injectEndpoints({
       query: ({ id }) => ({
         url: `event/${id}`,
       }),
-      providesTags: (result, error, { id }) => [{ type: "UserEvent", id }], // Tag specific to USEREVENT ID
+      providesTags: (result, error, { id }) => [{ type: "UserEvent", id }], // Tag specific to POST ID
     }),
     updateUserEvent: builder.mutation<
       void,
       { id: number; body: Partial<UserEvent> }
     >({
       query: ({ id, body }) => ({
-        url: `${USEREVENT}/${id}`,
+        url: `${POST}/${id}`,
         method: "PATCH",
         body,
       }),
       invalidatesTags: (result, error, { id }) => [
         "getUserEvent",
         { type: "UserEvent", id },
-      ], // Invalidate both the list and the specific USEREVENT entry
+      ], // Invalidate both the list and the specific POST entry
     }),
     deleteEvent: builder.mutation<void, string>({
       query: (id) => ({
@@ -138,17 +138,17 @@ const UserEventApi = baseApi.injectEndpoints({
       invalidatesTags: (result, error, id) => [
         "getUserEvent",
         { type: "UserEvent", id },
-      ], // Invalidate both the list and the specific USEREVENT entry
+      ], // Invalidate both the list and the specific POST entry
     }),
     deleteUserEvent: builder.mutation<void, string>({
       query: (id) => ({
-        url: `${USEREVENT}/${id}`,
+        url: `${POST}/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
         "getUserEvent",
         { type: "UserEvent", id },
-      ], // Invalidate both the list and the specific USEREVENT entry
+      ], // Invalidate both the list and the specific POST entry
     }),
   }),
   overrideExisting: false,
