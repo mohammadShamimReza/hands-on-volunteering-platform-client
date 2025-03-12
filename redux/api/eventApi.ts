@@ -34,12 +34,19 @@ const UserEventApi = baseApi.injectEndpoints({
         message: string;
         data: Event[];
       },
-      void
+      {
+        category?: string;
+        location?: string;
+      }
     >({
-      query: () => ({
+      query: ({ category, location }) => ({
         url: `event/`,
+        params: {
+          category,
+          location,
+        },
       }),
-      // providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
+      providesTags: ["getUserEvent"], // Enables refetching when invalidated
     }),
 
     getAllUserEventByUser: builder.query<
@@ -87,6 +94,20 @@ const UserEventApi = baseApi.injectEndpoints({
       }),
       providesTags: (result, error, { id }) => [{ type: "UserEvent", id }], // Tag specific to USEREVENT ID
     }),
+    getEventById: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Event;
+      },
+      { id: string }
+    >({
+      query: ({ id }) => ({
+        url: `event/${id}`,
+      }),
+      providesTags: (result, error, { id }) => [{ type: "UserEvent", id }], // Tag specific to USEREVENT ID
+    }),
     updateUserEvent: builder.mutation<
       void,
       { id: number; body: Partial<UserEvent> }
@@ -129,6 +150,7 @@ export const {
   useCreateEventMutation,
   useGetAllRegisteredEventsQuery,
   useGetAllEventQuery,
+  useGetEventByIdQuery,
   useGetAllUserEventQuery,
   useGetAllUserEventByUserQuery,
   useGetUserEventByIdQuery,
