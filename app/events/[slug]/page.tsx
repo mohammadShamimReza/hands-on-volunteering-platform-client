@@ -1,17 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import {
-  useCreateRegisterEventMutation,
-  useGetEventByIdQuery,
-} from "@/redux/api/eventApi";
-import { useParams } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Calendar, MapPin, Users, Eye } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useAppSelector } from "@/redux/hooks";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +10,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useCreateRegisterEventMutation,
+  useGetEventByIdQuery,
+} from "@/redux/api/eventApi";
+import { useAppSelector } from "@/redux/hooks";
+import { Calendar, Loader2, MapPin, Users } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
 export default function EventDetailsPage() {
   const params = useParams<{ slug: string }>();
@@ -26,8 +26,7 @@ export default function EventDetailsPage() {
   const userId = userInfo?.id; // Get userId from Redux state
 
   // Fetch event data
-    const { data: event, isLoading } = useGetEventByIdQuery({ id: params.slug });
-    console.log(event)
+  const { data: event, isLoading } = useGetEventByIdQuery({ id: params.slug });
   const [registerEvent, { isLoading: isRegistering }] =
     useCreateRegisterEventMutation();
   const eventData = event?.data;
@@ -36,26 +35,16 @@ export default function EventDetailsPage() {
   const isCurrentUserJoined = eventData?.participants?.some(
     (participant) => participant.userId === userId
   );
-   
+
+  console.log(isCurrentUserJoined, event);
 
   // ✅ Modal States
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-
-  // 🛠️ Handle Join Event Click
-  const handleJoinEvent = () => {
-    if (!userId) {
-      setShowLoginModal(true); // If user not logged in, show login modal
-    } else {
-      setShowConfirmModal(true); // Show confirmation modal
-    }
-  };
 
   // ✅ Confirm Join Event
   const confirmJoinEvent = async () => {
     try {
       await registerEvent({ userId, eventId: eventData?.id }).unwrap();
-      setShowConfirmModal(false);
       alert("You have successfully joined the event! ✅");
     } catch (error) {
       console.error("Error registering for event:", error);
@@ -121,23 +110,11 @@ export default function EventDetailsPage() {
           <Badge variant="outline">{eventData.category}</Badge>
 
           {/* Visibility */}
-          <div className="flex items-center gap-2 text-sm">
-            <Eye className="w-5 h-5 text-gray-600" />
-            <span
-              className={`font-medium ${
-                eventData.visibility === "PUBLIC"
-                  ? "text-blue-600"
-                  : "text-red-600"
-              }`}
-            >
-              {eventData.visibility}
-            </span>
-          </div>
 
           {/* Join Event Button */}
           <Button
             className="w-full mt-4"
-            onClick={handleJoinEvent}
+            onClick={confirmJoinEvent}
             disabled={isCurrentUserJoined || isRegistering}
           >
             {isRegistering ? (
@@ -158,27 +135,6 @@ export default function EventDetailsPage() {
           </ol>
         </div>
       </Card>
-
-      {/* ✅ Confirmation Modal */}
-      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Join Event</DialogTitle>
-          </DialogHeader>
-          <p>Are you sure you want to join this event?</p>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowConfirmModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={() => confirmJoinEvent()} disabled={isRegistering}>
-              {isRegistering ? <Loader2 className="animate-spin" /> : "Confirm"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* ❌ Please Login Modal */}
       <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
