@@ -103,7 +103,7 @@ const CommunityHelpPage = () => {
       ) : (
         <div className="w-full max-w-4xl px-4">
           {posts?.map((post) => (
-            <Card key={post.id} className="shadow-md mb-4">
+            <Card key={post.id} className="shadow-md mb-10">
               <CardHeader>
                 <CardTitle className="text-lg md:text-xl font-bold">
                   {post.title}

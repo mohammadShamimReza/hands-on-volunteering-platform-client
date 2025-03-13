@@ -91,11 +91,12 @@ export interface Team {
   description?: string;
   type: "PUBLIC" | "PRIVATE";
   createdById: string;
-  events: Event[]
+  events: Event[];
   createdAt: string;
   updatedAt: string;
   createdBy: User;
   members: TeamMember[];
+  post: Post[];
 }
 
 // Team Member Model

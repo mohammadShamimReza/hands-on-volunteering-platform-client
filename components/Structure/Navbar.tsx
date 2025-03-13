@@ -1,26 +1,26 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import { getTokenFromCookie, removeTokenFromCookies } from "@/lib/auth/token";
 import { useGetUserInfoQuery } from "@/redux/api/authApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { removeAuthToken, storeAuthToken, storeUserInfo } from "@/redux/slice/authSlice";
+import {
+  removeAuthToken,
+  storeAuthToken,
+  storeUserInfo,
+} from "@/redux/slice/authSlice";
 import { Menu, Moon, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-} from "@/components/ui/navigation-menu";
-
 
 const Navbar = () => {
   const [active, setActive] = useState<string | null>(null);
@@ -42,11 +42,10 @@ const Navbar = () => {
       dispatch(storeUserInfo(userData?.data));
     }
   }, [userData, dispatch]);
-  
+
   const [authenticated, setAuthenticated] = useState<boolean>(false);
 
   const authTokenFromRedux = useAppSelector((state) => state.auth.authToken);
-
 
   const removeTokenCookies = useCallback(() => {
     return removeTokenFromCookies();
@@ -59,7 +58,6 @@ const Navbar = () => {
   }, [tokenFromLocalStorage, dispatch]);
 
   // Store user data in Redux when available
-
 
   const authToken = getTokenFromCookie() || authTokenFromRedux;
   useEffect(() => {
@@ -86,7 +84,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    console.log('log out')
+    console.log("log out");
     removeTokenCookies();
     dispatch(removeAuthToken());
 
@@ -163,7 +161,6 @@ const Navbar = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
-                  {" "}
                   {userData?.profileImage ? (
                     <Image
                       src={userData?.profileImage}
@@ -177,17 +174,21 @@ const Navbar = () => {
                   )}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <NavigationMenuLink>
-                    <a
-                      href={"/profile"}
-                      className="text-center bg-black text-white rounded-lg p-2"
+                  <div className="flex flex-col items-center space-y-2 p-2">
+                    {/* ✅ Use Link without <a> inside */}
+                    <Link href="/profile" passHref>
+                      <Button className="w-full bg-black text-white rounded-lg p-5">
+                        Profile
+                      </Button>
+                    </Link>
+
+                    <Button
+                      onClick={handleLogout}
+                      className="cursor-pointer w-full"
                     >
-                      Profile
-                    </a>{" "}
-                    <Button onClick={handleLogout} className="cursor-pointer">
-                      log out
+                      Log out
                     </Button>
-                  </NavigationMenuLink>
+                  </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenuList>
