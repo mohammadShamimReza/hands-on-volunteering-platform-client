@@ -1,4 +1,4 @@
-import { Team, TeamMember } from "@/type/Index";
+import { Event, Team, TeamMember } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const TEAM = "/userTeam";
@@ -46,6 +46,20 @@ const TeamApi = baseApi.injectEndpoints({
     >({
       query: ({ teamId }) => ({
         url: `team/${teamId}`,
+      }),
+      providesTags: ["getTeam", "getUserTeam"], // Provides tag for refetching when invalidated
+    }),
+    getEventByTeamId: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Event[];
+      },
+      { teamId: string }
+    >({
+      query: ({ teamId }) => ({
+        url: `team/events/${teamId}`,
       }),
       providesTags: ["getTeam", "getUserTeam"], // Provides tag for refetching when invalidated
     }),
@@ -124,6 +138,7 @@ export const {
   useCreateTeamMutation,
   useGetAllTeamQuery,
   useCreateRegisterTeamMutation,
+  useGetEventByTeamIdQuery,
   useGetTeamByIdQuery,
   useGetAllRegisteredTeamsQuery,
   useGetAllTeamByUserIdQuery,

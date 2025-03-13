@@ -12,6 +12,7 @@ import {
   useGetAllUserEventByUserQuery,
 } from "@/redux/api/eventApi";
 import { Loader2, Minus, Plus } from "lucide-react";
+import { useGetAllTeamByUserIdQuery } from "@/redux/api/teamApi";
 
 interface Event {
   id?: string;
@@ -24,7 +25,8 @@ interface Event {
   category: string;
   requiredMembers: number;
   visibility: "PUBLIC" | "PRIVATE";
-  createdById: string;
+  createdById?: string;
+  createdByTeamId?: string
 }
 
 const categories = [
@@ -51,6 +53,8 @@ const categories = [
 ];
 
 const ManageEventsPage: React.FC = () => {
+      const [isChecked, setIsChecked] = useState(false);
+
   const [createEventButton, setCreateEventButton] = useState(false);
   const userData = useAppSelector((state) => state.auth.userInfo);
   const { data: userCreateEvent, isLoading: userCreateEventLoading } =
@@ -62,6 +66,15 @@ const ManageEventsPage: React.FC = () => {
   
    const [deleteEvent, { isLoading: eventDeleteLoading }] =
      useDeleteEventMutation();
+  
+  const { data: myAllTeams } = useGetAllTeamByUserIdQuery({ userId: userData.id })
+
+  const myTeams = myAllTeams?.data
+  
+  console.log(myTeams, 'my teams')
+  
+
+
   
   
   const [events, setEvents] = useState<Event[]>();
@@ -84,6 +97,7 @@ const ManageEventsPage: React.FC = () => {
     requiredMembers: 1,
     visibility: "PUBLIC", // Static value
     createdById: userData.id, // Automatically set from logged-in user
+    createdByTeamId: ""
   });
 
 
@@ -111,29 +125,36 @@ const ManageEventsPage: React.FC = () => {
     try {
       const formattedEvent = {
         ...newEvent,
-        createdById: userData.id, // Ensure user ID is assigned
         date: new Date(newEvent.date).toISOString(), // Convert to ISO format
         endDateTime: new Date(newEvent.endDateTime).toISOString(), // Convert to ISO format
       };
+
+          if (isChecked) {
+            delete formattedEvent.createdById;
+          } else {
+            formattedEvent.createdById = userData.id;
+          }
+
 
       const result = await createEvent(formattedEvent).unwrap();
       alert("Event created successfully!");
       console.log(result);
 
       // Reset form fields after event creation
-      setNewEvent({
-        id: "",
-        title: "",
-        description: "",
-        date: "",
-        endDateTime: "",
-        time: "",
-        location: "",
-        category: "",
-        requiredMembers: 1,
-        visibility: "PUBLIC",
-        createdById: userData.id,
-      });
+     setNewEvent({
+       id: "",
+       title: "",
+       description: "",
+       date: "",
+       endDateTime: "",
+       time: "",
+       location: "",
+       category: "",
+       requiredMembers: 1,
+       visibility: "PUBLIC",
+       createdById: userData.id,
+       createdByTeamId: "",
+     });
 
       setCreateEventButton(false); // Close form after creation
     } catch (error) {
@@ -274,6 +295,45 @@ const ManageEventsPage: React.FC = () => {
               />
             </div>
 
+            <div>
+              <label className="flex items-center space-x-2 mb-2">
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => setIsChecked(!isChecked)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Create event as a team?
+                </span>
+              </label>
+
+              {isChecked && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Create event as *
+                  </label>
+                  <select
+                    className="border p-2 rounded-md w-full"
+                    value={newEvent.createdByTeamId}
+                    onChange={(e) =>
+                      setNewEvent({
+                        ...newEvent,
+                        createdByTeamId: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="">Select Team</option>
+                    {myTeams?.map((team) => (
+                      <option key={team.id} value={team.id}>
+                        {team.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
             <Button onClick={handleCreateEvent} disabled={eventCreateLoading}>
               {eventCreateLoading ? (
                 <Loader2 className="animate-spin" />
@@ -327,16 +387,14 @@ const ManageEventsPage: React.FC = () => {
 
                 <div className="flex gap-4 mt-4">
                   <Button
-                    onClick={() => handleDeleteEvent(event?.id !!)}
+                    onClick={() => handleDeleteEvent(event?.id!!)}
                     variant="destructive"
                   >
                     Delete
                   </Button>
                 </div>
-                
               </CardContent>
             </Card>
-            
           ))
         )}
       </div>

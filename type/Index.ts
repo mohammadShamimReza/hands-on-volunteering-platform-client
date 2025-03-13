@@ -32,11 +32,13 @@ export interface Event {
   category: string;
   endDateTime: string;
   requiredMembers: number;
-  createdById: string;
+  createdById?: string;
+  createdByTeamId?: string
   visibility: "PUBLIC" | "PRIVATE";
   createdAt: string;
   updatedAt: string;
-  createdBy: User;
+  createdBy?: User;
+  createdByTeam?: Team; 
   participants: UserEvent[];
   contributions: Contribution[];
 }
@@ -89,6 +91,7 @@ export interface Team {
   description?: string;
   type: "PUBLIC" | "PRIVATE";
   createdById: string;
+  events: Event[]
   createdAt: string;
   updatedAt: string;
   createdBy: User;

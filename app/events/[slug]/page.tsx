@@ -152,7 +152,7 @@ export default function EventDetailsPage() {
         <div className="p-5">
           <p className=" font-bold text-2xl underline mt-5">All Perticipents</p>
           <ol className="text-xl  list-decimal list-inside mt-2">
-            {eventData?.participants?.map((user, index) => (
+            {eventData?.participants?.map((user) => (
               <li key={user.userId}>{user.user.fullName}</li>
             ))}
           </ol>
