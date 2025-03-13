@@ -1,17 +1,17 @@
-import { Event, UserEvent } from "@/type/Index";
+import { Event, Post, UserEvent } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const POST = "/post";
 
 const UserEventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createEvent: builder.mutation<void, Partial<Event>>({
+    createPost: builder.mutation<void, Partial<Post>>({
       query: (body) => ({
         url: `event/create`,
         method: "POST",
         body,
       }),
-      invalidatesTags: ["getUserEvent"], // Invalidate the list to refetch diagonostics
+      invalidatesTags: ["getPost"], // Invalidate the list to refetch diagonostics
     }),
     createRegisterEvent: builder.mutation<void, Partial<UserEvent>>({
       query: (body) => ({
@@ -57,7 +57,7 @@ const UserEventApi = baseApi.injectEndpoints({
       providesTags: ["getUserEvent"], // Enables refetching when invalidated
     }),
 
-    getAllUserEventByUser: builder.query<
+    getAllPostByUser: builder.query<
       {
         statusCode: number;
         success: boolean;
@@ -155,13 +155,13 @@ const UserEventApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreateEventMutation,
+  useCreatePostMutation,
   useCreateRegisterEventMutation,
   useGetAllRegisteredEventsQuery,
   useGetAllEventQuery,
   useGetEventByIdQuery,
   useGetAllUserEventQuery,
-  useGetAllUserEventByUserQuery,
+  useGetAllPostByUserQuery,
   useGetUserEventByIdQuery,
   useUpdateUserEventMutation,
   useDeleteEventMutation,
