@@ -1,19 +1,27 @@
-import { Team } from "@/type/Index";
+import { Team, TeamMember } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const TEAM = "/userTeam";
 
 const TeamApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createUserTeam: builder.mutation<void, Partial<Team>>({
+    createTeam: builder.mutation<void, Partial<Team>>({
       query: (body) => ({
-        url: `${TEAM}/create`,
+        url: `team/create`,
         method: "POST",
         body,
       }),
       invalidatesTags: ["getTeam"], // Invalidate the list to refetch diagonostics
     }),
-    getAllUserTeam: builder.query<
+    createRegisterTeam: builder.mutation<void, Partial<TeamMember>>({
+      query: (body) => ({
+        url: `team/register-team`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["getUserTeam"], // Invalidate the list to refetch diagonostics
+    }),
+    getAllTeam: builder.query<
       {
         statusCode: number;
         success: boolean;
@@ -23,7 +31,35 @@ const TeamApi = baseApi.injectEndpoints({
       void
     >({
       query: () => ({
-        url: `${TEAM}/`,
+        url: `team`,
+      }),
+      providesTags: ["getTeam"], // Provides tag for refetching when invalidated
+    }),
+    getTeamById: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Team;
+      },
+      { teamId: string }
+    >({
+      query: ({ teamId }) => ({
+        url: `team/${teamId}`,
+      }),
+      providesTags: ["getTeam", "getUserTeam"], // Provides tag for refetching when invalidated
+    }),
+    getAllTeamByUserId: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Team[];
+      },
+      { userId: string }
+    >({
+      query: ({ userId }) => ({
+        url: `team/user/${userId}`,
       }),
       providesTags: ["getTeam"], // Provides tag for refetching when invalidated
     }),
@@ -70,9 +106,9 @@ const TeamApi = baseApi.injectEndpoints({
         ], // Invalidate both the list and the specific TEAM entry
       }
     ),
-    deleteUserTeam: builder.mutation<void, number>({
+    deleteTeam: builder.mutation<void, string>({
       query: (id) => ({
-        url: `${TEAM}/${id}`,
+        url: `team/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
@@ -85,10 +121,13 @@ const TeamApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreateUserTeamMutation,
+  useCreateTeamMutation,
+  useGetAllTeamQuery,
+  useCreateRegisterTeamMutation,
+  useGetTeamByIdQuery,
   useGetAllRegisteredTeamsQuery,
-  useGetAllUserTeamQuery,
+  useGetAllTeamByUserIdQuery,
   useGetUserTeamByIdQuery,
   useUpdateUserTeamMutation,
-  useDeleteUserTeamMutation,
+  useDeleteTeamMutation,
 } = TeamApi;

@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  useCreateTeamMutation,
+  useDeleteTeamMutation,
+  useGetAllTeamByUserIdQuery,
+} from "@/redux/api/teamApi";
 import { useAppSelector } from "@/redux/hooks";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast, Toaster } from "sonner";
 
 interface Team {
   id: string;
@@ -14,24 +21,18 @@ interface Team {
   type: "PUBLIC" | "PRIVATE";
 }
 
-const demoTeams: Team[] = [
-  {
-    id: "1",
-    name: "Green Warriors",
-    description: "Fighting for the environment",
-    type: "PUBLIC",
-  },
-  {
-    id: "2",
-    name: "Food for All",
-    description: "Helping those in need with food",
-    type: "PUBLIC",
-  },
-];
-
 const ManageTeamsPage: React.FC = () => {
   const userData = useAppSelector((state) => state.auth.userInfo);
-  const [teams, setTeams] = useState<Team[]>(demoTeams);
+  const { data: teamByUserId, isLoading: teamByUserLoading } =
+    useGetAllTeamByUserIdQuery({ userId: userData.id });
+
+  const [teams, setTeams] = useState<Team[] | undefined>(undefined);
+
+  useEffect(() => {
+    if (teamByUserId?.data) {
+      setTeams(teamByUserId.data);
+    }
+  }, [teamByUserId]);
   const [newTeam, setNewTeam] = useState<Team>({
     id: "",
     name: "",
@@ -39,19 +40,92 @@ const ManageTeamsPage: React.FC = () => {
     type: "PUBLIC",
   });
 
-  const handleCreateTeam = () => {
-    if (!newTeam.name) return;
-    setTeams([...teams, { ...newTeam, id: Date.now().toString() }]);
-    setNewTeam({ id: "", name: "", description: "", type: "PUBLIC" });
+  console.log(teamByUserId?.data);
+
+  const [createTeam] = useCreateTeamMutation();
+
+  const handleCreateTeam = async () => {
+    if (!newTeam.name && !newTeam.description) {
+      toast("Please give proper data", {
+        style: {
+          backgroundColor: "red",
+          color: "white",
+        },
+      });
+    }
+    try {
+      const result = await createTeam({
+        name: newTeam.name,
+        description: newTeam.description,
+        type: "PUBLIC",
+        createdById: userData.id,
+      });
+      if (result?.error) {
+        toast("Team created is not succesfull", {
+          style: {
+            backgroundColor: "red",
+            color: "white",
+          },
+        });
+      }
+      if (result?.data) {
+        toast("Team successfully");
+        setNewTeam({
+          id: "",
+          name: "",
+          description: "",
+          type: "PUBLIC",
+        });
+      }
+    } catch (error) {
+      toast("Team creation failed! please try again letter", {
+        style: {
+          backgroundColor: "red",
+          color: "white",
+        },
+      });
+    }
+    // setTeams([...teams, { ...newTeam, id: Date.now().toString() }]);
+    // setNewTeam({ id: "", name: "", description: "", type: "PUBLIC" });
   };
 
-  const handleDeleteTeam = (id: string) => {
-    setTeams(teams.filter((team) => team.id !== id));
+  const [deleteTeam] = useDeleteTeamMutation();
+
+  const handleDeleteTeam = async (id: string) => {
+    try {
+      const result = await deleteTeam(id);
+      console.log(result, "result");
+      if (result?.error) {
+        toast("Team delete is not succesfull", {
+          style: {
+            backgroundColor: "red",
+            color: "white",
+          },
+        });
+      }
+      if (result?.data) {
+        toast("Team delete successfully");
+        setNewTeam({
+          id: "",
+          name: "",
+          description: "",
+          type: "PUBLIC",
+        });
+      }
+    } catch (error) {
+      toast("Team deletion failed! please try again letter", {
+        style: {
+          backgroundColor: "red",
+          color: "white",
+        },
+      });
+    }
   };
 
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">
       <h1 className="text-3xl font-bold mb-6">Manage Teams</h1>
+      <Toaster />
 
       {/* Create Team */}
       <Card className="max-w-2xl w-full mb-6">
@@ -79,10 +153,12 @@ const ManageTeamsPage: React.FC = () => {
       {/* Display User's Teams */}
       <h2 className="text-xl font-bold mb-4">Your Teams</h2>
       <div className="w-full max-w-2xl">
-        {teams.length === 0 ? (
+        {teamByUserLoading ? (
+          <Loader2 className="animate-spin mx-auto" />
+        ) : teams?.length === 0 ? (
           <p className="text-center text-gray-500">No teams created yet.</p>
         ) : (
-          teams.map((team) => (
+          teams?.map((team) => (
             <Card key={team.id} className="mb-4">
               <CardHeader>
                 <CardTitle>{team.name}</CardTitle>
