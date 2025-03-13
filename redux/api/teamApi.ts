@@ -1,4 +1,4 @@
-import { Team } from "@/type/Index";
+import { Team, TeamMember } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const TEAM = "/userTeam";
@@ -13,18 +13,41 @@ const TeamApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["getTeam"], // Invalidate the list to refetch diagonostics
     }),
+    createRegisterTeam: builder.mutation<void, Partial<TeamMember>>({
+      query: (body) => ({
+        url: `team/register-team`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["getUserTeam"], // Invalidate the list to refetch diagonostics
+    }),
     getAllTeam: builder.query<
       {
         statusCode: number;
         success: boolean;
         message: string;
         data: Team[];
-      }, void
+      },
+      void
     >({
       query: () => ({
         url: `team`,
       }),
       providesTags: ["getTeam"], // Provides tag for refetching when invalidated
+    }),
+    getTeamById: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: Team;
+      },
+      { teamId: string }
+    >({
+      query: ({ teamId }) => ({
+        url: `team/${teamId}`,
+      }),
+      providesTags: ["getTeam", "getUserTeam"], // Provides tag for refetching when invalidated
     }),
     getAllTeamByUserId: builder.query<
       {
@@ -100,6 +123,8 @@ const TeamApi = baseApi.injectEndpoints({
 export const {
   useCreateTeamMutation,
   useGetAllTeamQuery,
+  useCreateRegisterTeamMutation,
+  useGetTeamByIdQuery,
   useGetAllRegisteredTeamsQuery,
   useGetAllTeamByUserIdQuery,
   useGetUserTeamByIdQuery,

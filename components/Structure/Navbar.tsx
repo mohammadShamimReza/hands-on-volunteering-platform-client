@@ -140,7 +140,7 @@ const Navbar = () => {
           onClick={() => handleSetActive("requests")}
           asChild
         >
-          <Link href="/helpPost">Help Requests</Link>
+          <Link href="/helpPost">Post</Link>
         </Button>
         <Button
           variant={active === "teams" ? "default" : "outline"}
@@ -228,7 +228,7 @@ const Navbar = () => {
             onClick={() => handleSetActive("requests")}
             asChild
           >
-            <Link href="/helpPost">Help Requests</Link>
+            <Link href="/helpPost">Post</Link>
           </Button>
           <Button
             variant={active === "teams" ? "default" : "outline"}
