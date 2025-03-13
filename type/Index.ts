@@ -69,7 +69,7 @@ export interface Post {
   updatedAt: string;
   createdBy?: User;
   createdByTeam?: Team;
-  responses: Comment[];
+  comments: Comment[];
 }
 
 // Comment Model
