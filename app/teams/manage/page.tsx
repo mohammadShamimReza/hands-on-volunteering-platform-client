@@ -11,6 +11,7 @@ import {
 } from "@/redux/api/teamApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
 
@@ -165,13 +166,19 @@ const ManageTeamsPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700">{team.description}</p>
-                <Button
-                  onClick={() => handleDeleteTeam(team.id)}
-                  variant="destructive"
-                  className="mt-2"
-                >
-                  Delete
-                </Button>
+                <div className="flex justify-between mt-auto pt-4">
+                  <Button
+                    onClick={() => handleDeleteTeam(team.id)}
+                    variant="destructive"
+                    className="mt-2"
+                  >
+                    Delete
+                  </Button>
+                  <Button variant="outline">
+                    {" "}
+                    <Link href={`/teams/${team.id}`}>View Team</Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))

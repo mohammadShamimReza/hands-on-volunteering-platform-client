@@ -7,30 +7,6 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const teamTypeOptions = [
-  { label: "Public", value: "PUBLIC" },
-  { label: "Private", value: "PRIVATE" },
-];
-
-const mockTeams = [
-  {
-    id: "1",
-    name: "Green Warriors",
-    description:
-      "A team dedicated to tree planting and environmental conservation.",
-    type: "PUBLIC",
-    createdBy: "Alice",
-    members: 15,
-  },
-  {
-    id: "2",
-    name: "Food for All",
-    description: "Helping distribute food to underprivileged communities.",
-    type: "PRIVATE",
-    createdBy: "Bob",
-    members: 10,
-  },
-];
 
 
 const TeamsPage = () => {

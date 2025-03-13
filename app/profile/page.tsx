@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import Select from "react-select";
-import Image from "next/image";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useGetAllRegisteredEventsQuery, useGetAllUserEventQuery } from "@/redux/api/eventApi";
+import { useGetAllRegisteredEventsQuery } from "@/redux/api/eventApi";
 import { useGetAllRegisteredTeamsQuery } from "@/redux/api/teamApi";
-import { Loader2 } from "lucide-react";
-import { User } from "@/type/Index";
 import { useUpdateUserMutation } from "@/redux/api/userApi";
+import { useAppSelector } from "@/redux/hooks";
+import { User } from "@/type/Index";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import Select from "react-select";
 
 
 

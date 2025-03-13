@@ -1,13 +1,21 @@
-import { Event, Post, UserEvent } from "@/type/Index";
+import { Comment, Event, Post, UserEvent } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const POST = "/post";
 
-const UserEventApi = baseApi.injectEndpoints({
+const PostApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createPost: builder.mutation<void, Partial<Post>>({
       query: (body) => ({
         url: `${POST}/create`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["getPost"], // Invalidate the list to refetch diagonostics
+    }),
+    createComment: builder.mutation<void, Partial<Comment>>({
+      query: (body) => ({
+        url: `comment/create`,
         method: "POST",
         body,
       }),
@@ -35,26 +43,19 @@ const UserEventApi = baseApi.injectEndpoints({
       }),
       providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
     }),
-    getAllEvent: builder.query<
+    getAllPost: builder.query<
       {
         statusCode: number;
         success: boolean;
         message: string;
-        data: Event[];
+        data: Post[];
       },
-      {
-        category?: string;
-        location?: string;
-      }
+      void
     >({
-      query: ({ category, location }) => ({
-        url: `event/`,
-        params: {
-          category,
-          location,
-        },
+      query: () => ({
+        url: `post/`,
       }),
-      providesTags: ["getUserEvent"], // Enables refetching when invalidated
+      providesTags: ["getPost"], // Enables refetching when invalidated
     }),
 
     getAllPostByUser: builder.query<
@@ -72,20 +73,19 @@ const UserEventApi = baseApi.injectEndpoints({
       providesTags: ["getPost"], // Provides tag for refetching when invalidated
     }),
 
-    getAllRegisteredEvents: builder.query<
+    getAllPostByTeamId: builder.query<
       {
         statusCode: number;
         success: boolean;
         message: string;
-        data: Event[];
+        data: Post[];
       },
-      { userId: string } // Query parameter
+      { teamId: string } // Query parameter
     >({
-      query: ({ userId }) => ({
-        url: `/event/get-registered-event-by-user/${userId}`, // Adjust API route accordingly
-        method: "GET",
+      query: ({ teamId }) => ({
+        url: `${POST}/team/${teamId}`, // Adjust API route accordingly
       }),
-      providesTags: ["UserEvents"], // Enables caching & refetching
+      providesTags: ["getPost"], // Provides tag for refetching when invalidated
     }),
 
     getUserEventById: builder.query<
@@ -147,6 +147,13 @@ const UserEventApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["getPost"], // Invalidate both the list and the specific POST entry
     }),
+    deleteComment: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `comment/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["getPost"], // Invalidate both the list and the specific POST entry
+    }),
   }),
   overrideExisting: false,
 });
@@ -154,13 +161,15 @@ const UserEventApi = baseApi.injectEndpoints({
 export const {
   useCreatePostMutation,
   useCreateRegisterEventMutation,
-  useGetAllRegisteredEventsQuery,
-  useGetAllEventQuery,
+  useGetAllPostQuery,
   useGetEventByIdQuery,
+  useCreateCommentMutation,
   useGetAllUserEventQuery,
+  useGetAllPostByTeamIdQuery,
   useGetAllPostByUserQuery,
   useGetUserEventByIdQuery,
   useUpdateUserEventMutation,
   useDeleteEventMutation,
   useDeletePostMutation,
-} = UserEventApi;
+  useDeleteCommentMutation,
+} = PostApi;
