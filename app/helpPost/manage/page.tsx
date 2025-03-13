@@ -1,51 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAppSelector } from "@/redux/hooks";
+import {
+  useCreatePostMutation,
+  useDeletePostMutation,
+  useGetAllPostByUserQuery,
+} from "@/redux/api/postApi";
 import { useGetAllTeamByUserIdQuery } from "@/redux/api/teamApi";
-import { useGetAllPostByUserQuery } from "@/redux/api/postApi";
-
-interface Post {
-  id: string;
-  title: string;
-  description?: string;
-  urgency: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-  status: "OPEN" | "CLOSED";
-  createdById?: string; // User ID (if created by a user)
-  createdByTeamId?: string; // Team ID (if created by a team)
-}
-
-const demoPosts: Post[] = [
-  {
-    id: "1",
-    title: "Need volunteers for shelter",
-    description: "Urgent need for volunteers to assist at the shelter",
-    urgency: "URGENT",
-    status: "OPEN",
-    createdById: "user_1",
-  },
-  {
-    id: "2",
-    title: "Tutor kids on weekends",
-    description: "Looking for volunteers to teach math and science",
-    urgency: "MEDIUM",
-    status: "OPEN",
-    createdByTeamId: "team_1",
-  },
-];
+import { useAppSelector } from "@/redux/hooks";
+import { Post } from "@/type/Index";
+import { useEffect, useState } from "react";
 
 const ManagePostsPage: React.FC = () => {
   const userData = useAppSelector((state) => state.auth.userInfo);
-  const { data: PostByUser } = useGetAllPostByUserQuery({ userId: userData.id })
+  const { data: PostByUser } = useGetAllPostByUserQuery({
+    userId: userData.id,
+  });
 
-  console.log(userData.id)
-  
-  console.log(PostByUser)
-  const [posts, setPosts] = useState<Post[]>(demoPosts);
+  console.log(userData.id);
+  console.log(PostByUser?.data);
+
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    if (PostByUser?.data) {
+      setPosts(PostByUser.data);
+    }
+  }, [PostByUser]);
+
   const [isChecked, setIsChecked] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
 
@@ -54,14 +39,13 @@ const ManagePostsPage: React.FC = () => {
   });
   const myTeams = myAllTeams?.data;
 
-  const [newPost, setNewPost] = useState<Post>({
-    id: "",
+  const [createPost] = useCreatePostMutation();
+
+  const [newPost, setNewPost] = useState<Partial<Post>>({
     title: "",
     description: "",
     urgency: "MEDIUM",
     status: "OPEN",
-    createdById: userData.id, // Default: Created by user
-    createdByTeamId: undefined,
   });
 
   // 🔹 Validation State
@@ -70,10 +54,10 @@ const ManagePostsPage: React.FC = () => {
     description?: string;
   }>({});
 
-  const handleCreatePost = () => {
+  const handleCreatePost = async () => {
     let validationErrors: { title?: string; description?: string } = {};
 
-    if (!newPost.title.trim()) {
+    if (!newPost.title?.trim()) {
       validationErrors.title = "Title is required.";
     }
     if (!newPost.description?.trim()) {
@@ -85,34 +69,47 @@ const ManagePostsPage: React.FC = () => {
       return;
     }
 
-    const formattedPost: Post = {
+    const formattedPost: Partial<Post> = {
       ...newPost,
-      id: Date.now().toString(),
       createdById: isChecked ? undefined : userData.id, // If team is selected, remove user ID
       createdByTeamId: isChecked ? selectedTeam : undefined, // If not a team post, remove team ID
     };
 
-    console.log("New Post Data:", formattedPost); // ✅ Logs post data to console
+    console.log(formattedPost, "post");
+    try {
+      const result = await createPost(formattedPost);
+      console.log(result, "this is result");
 
-    setPosts([...posts, formattedPost]);
+      if (result) {
+        setPosts((prevPosts) => [...prevPosts, formattedPost as Post]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     setNewPost({
-      id: "",
       title: "",
       description: "",
       urgency: "MEDIUM",
       status: "OPEN",
-      createdById: userData.id, // Reset to user-created by default
-      createdByTeamId: undefined,
     });
-
     setIsChecked(false);
     setSelectedTeam("");
-
     setErrors({});
   };
 
-  const handleDeletePost = (id: string) => {
-    setPosts(posts.filter((post) => post.id !== id));
+  const [deletePost, { isLoading }] = useDeletePostMutation();
+
+  const handleDeletePost = async (id: string) => {
+    try {
+      const result = await deletePost(id);
+      console.log(result);
+      if (result) {
+        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -129,9 +126,9 @@ const ManagePostsPage: React.FC = () => {
             <Input
               type="text"
               placeholder="Post Title"
-              value={newPost.title}
+              value={newPost.title ?? ""}
               onChange={(e) =>
-                setNewPost({ ...newPost, title: e.target.value })
+                setNewPost((prev) => ({ ...prev, title: e.target.value }))
               }
             />
             {errors.title && (
@@ -142,9 +139,9 @@ const ManagePostsPage: React.FC = () => {
           <div>
             <Textarea
               placeholder="Description"
-              value={newPost.description}
+              value={newPost.description ?? ""}
               onChange={(e) =>
-                setNewPost({ ...newPost, description: e.target.value })
+                setNewPost((prev) => ({ ...prev, description: e.target.value }))
               }
             />
             {errors.description && (
@@ -161,10 +158,10 @@ const ManagePostsPage: React.FC = () => {
               className="border p-2 rounded-md w-full"
               value={newPost.urgency}
               onChange={(e) =>
-                setNewPost({
-                  ...newPost,
+                setNewPost((prev) => ({
+                  ...prev,
                   urgency: e.target.value as Post["urgency"],
-                })
+                }))
               }
             >
               <option value="LOW">Low</option>
@@ -225,21 +222,17 @@ const ManagePostsPage: React.FC = () => {
             <Card key={post.id} className="mb-4">
               <CardHeader>
                 <CardTitle>{post.title}</CardTitle>
-                <p className="text-sm text-gray-500">
-                  {post.createdById ? `Posted by User` : `Posted by Team`}
-                </p>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700">{post.description}</p>
-                <p className="text-sm text-gray-500">
-                  Urgency: <span className="font-semibold">{post.urgency}</span>
-                </p>
+                <p className="text-sm text-gray-500">Urgency: {post.urgency}</p>
                 <Button
                   onClick={() => handleDeletePost(post.id)}
                   variant="destructive"
                   className="mt-2"
+                  disabled={isLoading}
                 >
-                  Delete
+                  {isLoading ? "Deleting" : "Delete"}
                 </Button>
               </CardContent>
             </Card>

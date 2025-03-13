@@ -7,7 +7,7 @@ const UserEventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createPost: builder.mutation<void, Partial<Post>>({
       query: (body) => ({
-        url: `event/create`,
+        url: `${POST}/create`,
         method: "POST",
         body,
       }),
@@ -62,14 +62,14 @@ const UserEventApi = baseApi.injectEndpoints({
         statusCode: number;
         success: boolean;
         message: string;
-        data: Event[];
+        data: Post[];
       },
       { userId: string } // Query parameter
     >({
       query: ({ userId }) => ({
-        url: `/event/get-event-created-user/${userId}`, // Adjust API route accordingly
+        url: `${POST}/user/${userId}`, // Adjust API route accordingly
       }),
-      providesTags: ["getUserEvent"], // Provides tag for refetching when invalidated
+      providesTags: ["getPost"], // Provides tag for refetching when invalidated
     }),
 
     getAllRegisteredEvents: builder.query<
@@ -100,7 +100,7 @@ const UserEventApi = baseApi.injectEndpoints({
       query: ({ id }) => ({
         url: `${POST}/${id}`,
       }),
-      providesTags: ['getUserEvent'], // Tag specific to POST ID
+      providesTags: ["getUserEvent"], // Tag specific to POST ID
     }),
     getEventById: builder.query<
       {
@@ -140,15 +140,12 @@ const UserEventApi = baseApi.injectEndpoints({
         { type: "UserEvent", id },
       ], // Invalidate both the list and the specific POST entry
     }),
-    deleteUserEvent: builder.mutation<void, string>({
+    deletePost: builder.mutation<void, string>({
       query: (id) => ({
         url: `${POST}/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        "getUserEvent",
-        { type: "UserEvent", id },
-      ], // Invalidate both the list and the specific POST entry
+      invalidatesTags: ["getPost"], // Invalidate both the list and the specific POST entry
     }),
   }),
   overrideExisting: false,
@@ -165,5 +162,5 @@ export const {
   useGetUserEventByIdQuery,
   useUpdateUserEventMutation,
   useDeleteEventMutation,
-  useDeleteUserEventMutation,
+  useDeletePostMutation,
 } = UserEventApi;

@@ -61,7 +61,7 @@ export interface Post {
   id: string;
   title: string;
   description?: string;
-  urgency: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+  urgency: "LOW" | "MEDIUM" | "URGENT";
   status: "OPEN" | "CLOSED";
   createdById?: string;
   createdByTeamId?: string;
