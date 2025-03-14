@@ -1,7 +1,14 @@
-import { Leaderboard } from "@/type/Index";
+import { Leaderboard, User } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const CONTRIBUTION = "/contribution";
+
+export type LogHoursData = {
+  joinedAt: string; // When the user joined the event
+  endDateTime: string; // When the event ends
+  hoursVolunteered: number; // Total hours volunteered
+  user: User; // User details including nested event info
+};
 
 const UserApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,12 +17,16 @@ const UserApi = baseApi.injectEndpoints({
         statusCode: number;
         success: boolean;
         message: string;
-        data: Leaderboard[];
+        data: LogHoursData;
       },
-      void
+      { userId: string; eventId: string }
     >({
-      query: () => ({
+      query: ({ userId, eventId }) => ({
         url: `${CONTRIBUTION}/log-hours`,
+        params: {
+          userId,
+          eventId,
+        },
       }),
       // providesTags: ["getUser"], // Provides tag for refetching when invalidated
     }),
@@ -24,7 +35,7 @@ const UserApi = baseApi.injectEndpoints({
         statusCode: number;
         success: boolean;
         message: string;
-        data: Leaderboard;
+        data: Leaderboard[];
       },
       void
     >({

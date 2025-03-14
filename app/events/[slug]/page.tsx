@@ -11,15 +11,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { generateCertificate } from "@/components/utils/generateCertificate";
 import {
   useCreateRegisterEventMutation,
   useGetEventByIdQuery,
 } from "@/redux/api/eventApi";
+import { useGetLogHoursQuery } from "@/redux/api/leaderboardApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Calendar, Loader2, MapPin, Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+
+const certificateMilestones = [20, 50, 100]; // 🏅 Hours required for certificates
 
 export default function EventDetailsPage() {
   const params = useParams<{ slug: string }>();
@@ -31,6 +35,13 @@ export default function EventDetailsPage() {
   const [registerEvent, { isLoading: isRegistering }] =
     useCreateRegisterEventMutation();
   const eventData = event?.data;
+
+  const { data: logHoursData, isLoading: logHoursLoading } =
+    useGetLogHoursQuery({ userId: userInfo.id, eventId: params.slug });
+
+  const hoursVolunteered = logHoursData?.data?.hoursVolunteered || 0; // Default to 0
+
+  console.log(logHoursData?.data.hoursVolunteered, "hour");
 
   // Check if the current user is already registered
   const isCurrentUserJoined = eventData?.participants?.some(
@@ -62,6 +73,14 @@ export default function EventDetailsPage() {
       console.error("Error registering for event:", error);
       alert("Failed to join event. Please try again.");
     }
+  };
+
+  const handleDownloadCertificate = (milestone: number) => {
+    generateCertificate({
+      fullName: userInfo.fullName,
+      hours: milestone,
+      eventTitle: eventData?.title || "No title",
+    });
   };
 
   // Show loading state
@@ -120,6 +139,34 @@ export default function EventDetailsPage() {
 
           {/* Event Category */}
           <Badge variant="outline">{eventData.category}</Badge>
+          <p className="font-semibold text-lg">
+            ⏳ Hours Volunteered: {hoursVolunteered}
+          </p>
+
+          {/* Certificates */}
+          {userInfo.id && (
+            <div className="mt-5">
+              <h2 className="text-lg font-bold mb-3">🎓 Certificates</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {certificateMilestones.map((milestone) => (
+                  <Button
+                    key={milestone}
+                    className={`w-full ${
+                      hoursVolunteered >= milestone
+                        ? "bg-green-500 hover:bg-green-600"
+                        : "bg-gray-300 cursor-not-allowed"
+                    }`}
+                    disabled={hoursVolunteered < milestone}
+                    onClick={() => handleDownloadCertificate(milestone)}
+                  >
+                    {hoursVolunteered >= milestone
+                      ? `Download ${milestone}h Cert`
+                      : `🔒 ${milestone}h Locked`}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Visibility */}
 

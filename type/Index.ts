@@ -139,11 +139,11 @@ export interface Leaderboard {
   id: string;
   userId: string;
   rank: number;
-  points: number;
-  hours: number;
+  totalPoints: number;
+  totalHours: number;
   createdAt: string;
   updatedAt: string;
-  user: User;
+  user: Partial<User>;
 }
 
 // Certificate Model

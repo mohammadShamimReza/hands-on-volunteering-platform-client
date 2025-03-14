@@ -2,29 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  useGetLeaderboardQuery,
-  useGetLogHoursQuery,
-} from "@/redux/api/leaderboardApi";
+import { useGetLeaderboardQuery } from "@/redux/api/leaderboardApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const certificateMilestones = [20, 50, 100]; // 🏅 Hours required for certificates
 
-const page = () => {
+const Page = () => {
   const userData = useAppSelector((state) => state.auth.userInfo);
   const router = useRouter();
 
-  // ✅ Fetch Log Hours
-  const { data: logHoursData, isLoading: logHoursLoading } =
-    useGetLogHoursQuery();
+  // Fetch Data
 
-  // ✅ Fetch Leaderboard Data
   const { data: leaderboardData, isLoading: leaderboardLoading } =
     useGetLeaderboardQuery();
 
-  // 🔐 If user is not logged in, redirect to login
+  console.log(leaderboardData);
+
+  // Redirect if not logged in
   if (!userData) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -47,56 +43,20 @@ const page = () => {
         Volunteer Impact Tracking
       </h1>
 
-      {/* 🔹 Volunteer Hours Card */}
-      <Card className="mb-6">
+      {/* Leaderboard Section */}
+      <Card className="relative">
         <CardHeader>
-          <CardTitle>Your Logged Hours</CardTitle>
+          <CardTitle className="text-center underline text-2xl">
+            {" "}
+            Leaderboard
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          {logHoursLoading ? (
+        <CardContent className="max-h-96 overflow-y-auto">
+          {leaderboardLoading ? (
             <Loader2 className="animate-spin mx-auto" />
-          ) : logHoursData?.data ? (
-            <div className="text-center text-xl font-semibold">
-              {/* ⏳ {logHoursData.data.hoursVolunteered} Hours Logged */}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">No hours logged yet.</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* 🔹 Certificates Section */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Certificates Earned</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 justify-center">
-            {/* {certificateMilestones.map((milestone) => (
-              <div key={milestone} className="flex flex-col items-center">
-                <Medal className="w-10 h-10 text-yellow-500" />
-                <p className="text-sm font-medium mt-2">
-                  {logHoursData?.data?.hoursVolunteered >= milestone
-                    ? `🏅 Achieved ${milestone} Hours`
-                    : `🔜 ${milestone} Hours`}
-                </p>
-              </div>
-            ))} */}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 🔹 Leaderboard Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Volunteer Leaderboard</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* {leaderboardLoading ? (
-            <Loader2 className="animate-spin mx-auto" />
-          ) : leaderboardData?.data?.length > 0 ? (
+          ) : (leaderboardData?.data?.length ?? 0) > 0 ? (
             <div className="space-y-3">
-              {leaderboardData.data.map((user, index) => (
+              {leaderboardData?.data?.map((user, index) => (
                 <div
                   key={user.user.id}
                   className={`flex items-center justify-between p-3 border rounded-md ${
@@ -108,7 +68,7 @@ const page = () => {
                     <img
                       src={user.user.profileImage || "/default-avatar.png"}
                       alt={user.user.fullName}
-                      className="w-8 h-8 rounded-full"
+                      className="w-10 h-10 rounded-full border"
                     />
                     <span className="font-medium">{user.user.fullName}</span>
                   </div>
@@ -127,11 +87,11 @@ const page = () => {
             <p className="text-center text-gray-500">
               No leaderboard data available.
             </p>
-          )} */}
+          )}
         </CardContent>
       </Card>
     </div>
   );
 };
 
-export default page;
+export default Page;

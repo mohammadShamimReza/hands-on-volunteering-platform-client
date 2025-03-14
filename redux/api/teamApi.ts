@@ -131,7 +131,6 @@ const TeamApi = baseApi.injectEndpoints({
       ], // Invalidate both the list and the specific TEAM entry
     }),
   }),
-  overrideExisting: false,
 });
 
 export const {

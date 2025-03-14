@@ -154,7 +154,6 @@ const UserEventApi = baseApi.injectEndpoints({
       ], // Invalidate both the list and the specific USEREVENT entry
     }),
   }),
-  overrideExisting: false,
 });
 
 export const {
