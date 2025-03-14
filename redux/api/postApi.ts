@@ -5,7 +5,7 @@ const POST = "/post";
 
 const PostApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createPost: builder.mutation<void, Partial<Post>>({
+    createPost: builder.mutation<{ data: any; error: any }, Partial<Post>>({
       query: (body) => ({
         url: `${POST}/create`,
         method: "POST",
@@ -102,20 +102,7 @@ const PostApi = baseApi.injectEndpoints({
       }),
       providesTags: ["getUserEvent"], // Tag specific to POST ID
     }),
-    getEventById: builder.query<
-      {
-        statusCode: number;
-        success: boolean;
-        message: string;
-        data: Event;
-      },
-      { id: string }
-    >({
-      query: ({ id }) => ({
-        url: `event/${id}`,
-      }),
-      providesTags: (result, error, { id }) => [{ type: "UserEvent", id }], // Tag specific to POST ID
-    }),
+
     updateUserEvent: builder.mutation<
       void,
       { id: number; body: Partial<UserEvent> }
@@ -162,7 +149,6 @@ export const {
   useCreatePostMutation,
   useCreateRegisterEventMutation,
   useGetAllPostQuery,
-  useGetEventByIdQuery,
   useCreateCommentMutation,
   useGetAllUserEventQuery,
   useGetAllPostByTeamIdQuery,

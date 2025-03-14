@@ -5,7 +5,7 @@ const USEREVENT = "/userEvent";
 
 const UserEventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createEvent: builder.mutation<void, Partial<Event>>({
+    createEvent: builder.mutation<{ data: any; error: any }, Partial<Event>>({
       query: (body) => ({
         url: `event/create`,
         method: "POST",
@@ -85,7 +85,7 @@ const UserEventApi = baseApi.injectEndpoints({
         url: `/event/get-registered-event-by-user/${userId}`, // Adjust API route accordingly
         method: "GET",
       }),
-      providesTags: ["UserEvents"], // Enables caching & refetching
+      providesTags: ["getUserEvent"], // Enables caching & refetching
     }),
 
     getUserEventById: builder.query<
@@ -100,7 +100,7 @@ const UserEventApi = baseApi.injectEndpoints({
       query: ({ id }) => ({
         url: `${USEREVENT}/${id}`,
       }),
-      providesTags: ['getUserEvent'], // Tag specific to USEREVENT ID
+      providesTags: ["getUserEvent"], // Tag specific to USEREVENT ID
     }),
     getEventById: builder.query<
       {
@@ -114,7 +114,7 @@ const UserEventApi = baseApi.injectEndpoints({
       query: ({ id }) => ({
         url: `event/${id}`,
       }),
-      providesTags: (result, error, { id }) => [{ type: "UserEvent", id }], // Tag specific to USEREVENT ID
+      providesTags: ["getUserEvent"], // Tag specific to USEREVENT ID
     }),
     updateUserEvent: builder.mutation<
       void,
@@ -130,7 +130,7 @@ const UserEventApi = baseApi.injectEndpoints({
         { type: "UserEvent", id },
       ], // Invalidate both the list and the specific USEREVENT entry
     }),
-    deleteEvent: builder.mutation<void, string>({
+    deleteEvent: builder.mutation<{ data: any; error: any }, string>({
       query: (id) => ({
         url: `event/${id}`,
         method: "DELETE",

@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetAllEventQuery } from "@/redux/api/eventApi";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,9 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
-import { Loader2, Calendar, MapPin, Users, Filter } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useGetAllEventQuery } from "@/redux/api/eventApi";
+import { Calendar, Filter, Loader2, MapPin, Users } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 const EventPage = () => {
   // 🔍 Filtering State
@@ -36,7 +36,7 @@ const EventPage = () => {
       <div className="w-full flex flex-col items-center py-6 px-4">
         <div className="w-full max-w-3xl bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 flex flex-col md:flex-row items-center justify-center gap-4 border border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-800 dark:text-gray-200">
-            <Filter className="w-5 h-5 text-blue-500" /> Filter 
+            <Filter className="w-5 h-5 text-blue-500" /> Filter
           </h2>
 
           <div className="flex flex-col md:flex-row gap-4 w-full">
@@ -99,6 +99,8 @@ const EventPage = () => {
       {allEvents?.data.length === 0 && !isLoading && (
         <p className="text-center text-gray-500">No events found.</p>
       )}
+
+      {isLoading && <Loader2 />}
 
       {/* Event List */}
       {!isLoading && (

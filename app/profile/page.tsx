@@ -71,44 +71,45 @@ const causesOptions = [
 const ProfilePage: React.FC = () => {
 
   const userData = useAppSelector((state) => state.auth.userInfo)
-  const {data: getUserAllregisteredEvent, isLoading: eventLoading } = useGetAllRegisteredEventsQuery({ userId: userData.id })
-  const  {data: getUserAllRegisteredTeam, isLoading: teamLoading } = useGetAllRegisteredTeamsQuery({
-    userId: userData.id,
+  const { data: getUserAllregisteredEvent, isLoading: eventLoading } =
+    useGetAllRegisteredEventsQuery({ userId: userData?.id });
+  const { data: getUserAllRegisteredTeam, isLoading: teamLoading } =
+    useGetAllRegisteredTeamsQuery({
+      userId: userData?.id,
+    });
+
+  const [updatedUser, setUpdatedUser] = useState<Partial<User>>({
+    bio: userData.bio,
+    fullName: userData.fullName,
+    skills: userData.skills,
+    causes: userData.causes,
   });
 
-
-   const [updatedUser, setUpdatedUser] = useState<  Partial<User>>({ bio: userData.bio, fullName: userData.fullName, skills: userData.skills, causes: userData.causes });
-
-   useEffect(() => {
-      if (userData) {
-       setUpdatedUser({
-         bio: userData.bio,
-         fullName: userData.fullName,
-         skills: userData.skills,
-         causes: userData.causes,
-       });
-      }
-    }, [userData]);
+  useEffect(() => {
+    if (userData) {
+      setUpdatedUser({
+        bio: userData.bio,
+        fullName: userData.fullName,
+        skills: userData.skills,
+        causes: userData.causes,
+      });
+    }
+  }, [userData]);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
- 
-  
-    
 
-    
-  const [updateUser, { isLoading: updateUserLoading }] = useUpdateUserMutation();
+  const [updateUser, { isLoading: updateUserLoading }] =
+    useUpdateUserMutation();
 
   const handleSave = async () => {
     console.log(updatedUser, "update user data");
-try {
-  const result = await updateUser({
-    id: userData.id,
-    body: updatedUser, // Pass the correct object
-  }).unwrap();
-  console.log(result, 'this is update user')
-} catch (error) {
-  
-}
+    try {
+      const result = await updateUser({
+        id: userData.id,
+        body: updatedUser, // Pass the correct object
+      }).unwrap();
+      console.log(result, "this is update user");
+    } catch (error) {}
     // setUser(updatedUser);
     setIsEditing(false);
   };
@@ -223,14 +224,15 @@ try {
             <Loader2 />
           ) : (
             getUserAllregisteredEvent?.data?.map((userEvent) => (
-              <Link
-                href={`/events/${userEvent.id}`}
-                key={userEvent.id}
-                className="text-sm mb-2 hover:bg-gray-200 hover:dark:border-gray-600"
-              >
-                ✔ {userEvent.title} -{" "}
-                {new Date(userEvent.endDateTime).toDateString()}
-              </Link>
+              <div className="" key={userEvent.id}>
+                <Link
+                  href={`/events/${userEvent.id}`}
+                  className="text-sm mb-2 hover:bg-gray-200 hover:dark:border-gray-600"
+                >
+                  ✔ {userEvent.title} -{" "}
+                  {new Date(userEvent.endDateTime).toDateString()}
+                </Link>
+              </div>
             ))
           )}
         </div>

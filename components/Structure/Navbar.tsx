@@ -147,8 +147,8 @@ const Navbar = () => {
         >
           <Link href="/teams">Teams</Link>
         </Button>
-        <Button variant="default" asChild>
-          <Link href="/volunteer">Volunteer Now</Link>
+        <Button asChild>
+          <Link href="/leaderboard">Leaderboard</Link>
         </Button>
       </div>
 
@@ -239,7 +239,7 @@ const Navbar = () => {
             <Link href="/teams">Teams</Link>
           </Button>
           <Button variant="default" asChild>
-            <Link href="/volunteer">Volunteer Now</Link>
+            <Link href="/leaderboard">Leaderboard </Link>
           </Button>
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

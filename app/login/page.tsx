@@ -87,7 +87,6 @@ export default function LoginPage() {
           localStorage.setItem("jwt", result?.data?.data.accessToken);
 
           dispatch(storeUserInfo(result?.data?.user));
-          setSelectedMenu("Overview");
 
           router.push("/");
         }

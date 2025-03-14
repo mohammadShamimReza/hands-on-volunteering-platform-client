@@ -312,10 +312,10 @@ const SignupPage: React.FC = () => {
               </Button>
             </form>
           </FormProvider>
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-14 text-center text-sm">
             Already have an account?{" "}
             <Link href="/login" className="underline">
-              Sign in
+              Log in
             </Link>
           </div>
         </CardContent>
