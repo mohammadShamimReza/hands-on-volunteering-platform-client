@@ -138,32 +138,34 @@ export default function EventDetailsPage() {
           </div>
 
           {/* Event Category */}
-          <Badge variant="outline">{eventData.category}</Badge>
-          <p className="font-semibold text-lg">
-            ⏳ Hours Volunteered: {hoursVolunteered}
-          </p>
 
           {/* Certificates */}
           {userInfo.id && (
-            <div className="mt-5">
-              <h2 className="text-lg font-bold mb-3">🎓 Certificates</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {certificateMilestones.map((milestone) => (
-                  <Button
-                    key={milestone}
-                    className={`w-full ${
-                      hoursVolunteered >= milestone
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-gray-300 cursor-not-allowed"
-                    }`}
-                    disabled={hoursVolunteered < milestone}
-                    onClick={() => handleDownloadCertificate(milestone)}
-                  >
-                    {hoursVolunteered >= milestone
-                      ? `Download ${milestone}h Cert`
-                      : `🔒 ${milestone}h Locked`}
-                  </Button>
-                ))}
+            <div className="">
+              <Badge variant="outline">{eventData.category}</Badge>
+              <p className="font-semibold text-lg">
+                ⏳ Hours Volunteered: {hoursVolunteered}
+              </p>
+              <div className="mt-5">
+                <h2 className="text-lg font-bold mb-3">🎓 Certificates</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {certificateMilestones.map((milestone) => (
+                    <Button
+                      key={milestone}
+                      className={`w-full ${
+                        hoursVolunteered >= milestone
+                          ? "bg-green-500 hover:bg-green-600"
+                          : "bg-gray-300 cursor-not-allowed"
+                      }`}
+                      disabled={hoursVolunteered < milestone}
+                      onClick={() => handleDownloadCertificate(milestone)}
+                    >
+                      {hoursVolunteered >= milestone
+                        ? `Download ${milestone}h Cert`
+                        : `🔒 ${milestone}h Locked`}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -171,19 +173,29 @@ export default function EventDetailsPage() {
           {/* Visibility */}
 
           {/* Join Event Button */}
-          <Button
-            className="w-full mt-4"
-            onClick={confirmJoinEvent}
-            disabled={isCurrentUserJoined || isRegistering}
-          >
-            {isRegistering ? (
-              <Loader2 className="animate-spin mr-2" />
-            ) : isCurrentUserJoined ? (
-              "Already Joined"
-            ) : (
-              "Join Event"
-            )}
-          </Button>
+          {userInfo.id ? (
+            <Button
+              className="w-full mt-4"
+              onClick={confirmJoinEvent}
+              disabled={isCurrentUserJoined || isRegistering}
+            >
+              {isRegistering ? (
+                <Loader2 className="animate-spin mr-2" />
+              ) : isCurrentUserJoined ? (
+                "Already Joined"
+              ) : (
+                "Join Event"
+              )}
+            </Button>
+          ) : (
+            <Button
+              className="w-full mt-4"
+              onClick={() => toast.error("Please login first")}
+              disabled={isCurrentUserJoined || isRegistering}
+            >
+              Join Event
+            </Button>
+          )}
         </CardContent>
         <div className="p-5">
           <p className=" font-bold text-2xl underline mt-5">All Perticipents</p>

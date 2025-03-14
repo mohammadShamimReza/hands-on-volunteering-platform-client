@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Toaster } from "@/components/ui/sonner";
 import {
   useCreateCommentMutation,
   useDeleteCommentMutation,
@@ -18,6 +19,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const CommunityHelpPage = () => {
   const router = useRouter();
@@ -51,6 +53,11 @@ const CommunityHelpPage = () => {
   };
 
   const handleCommentSubmit = async (postId: string) => {
+    if (!userData.id) {
+      toast.error("Please login first");
+      return;
+    }
+
     const comment = comments[postId]?.trim();
     if (!comment) return;
 
@@ -95,6 +102,7 @@ const CommunityHelpPage = () => {
       <h1 className="text-2xl font-bold mb-6 text-center">
         Community Help Requests
       </h1>
+      <Toaster />
 
       {isLoading && <Loader2 className="animate-spin" />}
 

@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Toaster } from "@/components/ui/sonner";
 import {
   useCreateRegisterTeamMutation,
   useGetAllTeamQuery,
@@ -16,6 +17,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { Team } from "@/type/Index";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const TeamsPage = () => {
   const { data: teamData, isLoading: teamDataLoading } = useGetAllTeamQuery();
@@ -53,7 +55,7 @@ const TeamsPage = () => {
    */
   const handleJoinTeam = async (teamId: string) => {
     if (!userData?.id) {
-      alert("Please log in to join a team.");
+      toast.error("Please log in first.");
       return;
     }
 
@@ -80,7 +82,7 @@ const TeamsPage = () => {
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">
       <h1 className="text-2xl font-bold mb-6 text-center">Volunteer Teams</h1>
-
+      <Toaster />
       {teamDataLoading ? (
         <Loader2 className="animate-spin" />
       ) : teams?.length === 0 ? (
