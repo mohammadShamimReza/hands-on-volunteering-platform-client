@@ -19,6 +19,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { Calendar, Loader2, MapPin, Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function EventDetailsPage() {
   const params = useParams<{ slug: string }>();
@@ -44,8 +45,19 @@ export default function EventDetailsPage() {
   // ✅ Confirm Join Event
   const confirmJoinEvent = async () => {
     try {
-      await registerEvent({ userId, eventId: eventData?.id }).unwrap();
-      alert("You have successfully joined the event! ✅");
+      const result = await registerEvent({
+        userId,
+        eventId: eventData?.id,
+      }).unwrap();
+      if (result?.error) {
+        toast.error("Event joined successfull. Please try again letter!!");
+      }
+
+      if (result.data) {
+        toast.success(
+          `Event joined successfull! now you are the member of the event.`
+        );
+      }
     } catch (error) {
       console.error("Error registering for event:", error);
       alert("Failed to join event. Please try again.");

@@ -27,6 +27,7 @@ export const baseApi = createApi({
     "getTeam",
     "getUserTeam",
     "getPost",
-    "getPost"
+    "getPost",
+    "registerTeam",
   ],
 });

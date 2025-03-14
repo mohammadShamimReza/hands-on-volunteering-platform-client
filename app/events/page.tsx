@@ -28,6 +28,8 @@ const EventPage = () => {
   // 🛠️ Fetching Events with Filters
   const { data: allEvents, isLoading } = useGetAllEventQuery(filters);
 
+  console.log(allEvents);
+
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Upcoming Events</h1>
@@ -110,7 +112,7 @@ const EventPage = () => {
               key={event.id}
               className="shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between h-full rounded-lg border border-gray-200 dark:border-gray-700"
             >
-              <CardHeader className="bg-blue-50 dark:bg-gray-800 p-4 rounded-t-lg">
+              <CardHeader className=" dark:bg-gray-800 p-4 rounded-t-lg">
                 <CardTitle className="text-lg md:text-xl font-semibold">
                   {event.title}
                 </CardTitle>

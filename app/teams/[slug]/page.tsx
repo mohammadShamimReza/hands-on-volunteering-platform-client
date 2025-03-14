@@ -99,7 +99,7 @@ export default function TeamPage() {
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-4xl w-full">
+            <DialogContent className="max-w-4xl w-full h-2/3 overflow-scroll">
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold">
                   All Events
@@ -112,7 +112,7 @@ export default function TeamPage() {
                     key={event.id}
                     className="shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between h-full rounded-lg border border-gray-200 dark:border-gray-700"
                   >
-                    <CardHeader className="bg-blue-50 dark:bg-gray-800 p-4 rounded-t-lg">
+                    <CardHeader className=" dark:bg-gray-800 p-4 rounded-t-lg">
                       <CardTitle className="text-lg md:text-xl font-semibold">
                         {event.title}
                       </CardTitle>
@@ -164,7 +164,7 @@ export default function TeamPage() {
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-4xl w-full">
+            <DialogContent className="max-w-4xl w-full h-2/3 overflow-scroll">
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold">
                   All Post

@@ -246,13 +246,14 @@ const ProfilePage: React.FC = () => {
             <Loader2 />
           ) : (
             getUserAllRegisteredTeam?.data?.map((team) => (
-              <Link
-                href={`/teams/${team.id}`}
-                key={team.id}
-                className="text-sm mb-2  hover:bg-gray-200 hover:dark:border-gray-600"
-              >
-                🔹 {team.name}
-              </Link>
+              <div className="" key={team.id}>
+                <Link
+                  href={`/teams/${team.id}`}
+                  className="text-sm mb-2  hover:bg-gray-200 hover:dark:border-gray-600"
+                >
+                  🔹 {team.name}
+                </Link>
+              </div>
             ))
           )}
         </div>

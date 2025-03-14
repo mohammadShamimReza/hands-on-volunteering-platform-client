@@ -13,7 +13,10 @@ const UserEventApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["getUserEvent"], // Invalidate the list to refetch diagonostics
     }),
-    createRegisterEvent: builder.mutation<void, Partial<UserEvent>>({
+    createRegisterEvent: builder.mutation<
+      { data: any; error: any },
+      Partial<UserEvent>
+    >({
       query: (body) => ({
         url: `event/register-event`,
         method: "POST",
@@ -117,7 +120,7 @@ const UserEventApi = baseApi.injectEndpoints({
       providesTags: ["getUserEvent"], // Tag specific to USEREVENT ID
     }),
     updateUserEvent: builder.mutation<
-      void,
+      { data: any; error: any },
       { id: number; body: Partial<UserEvent> }
     >({
       query: ({ id, body }) => ({

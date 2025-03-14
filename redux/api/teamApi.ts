@@ -19,7 +19,7 @@ const TeamApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["getUserTeam"], // Invalidate the list to refetch diagonostics
+      invalidatesTags: ["registerTeam"], // Invalidate the list to refetch diagonostics
     }),
     getAllTeam: builder.query<
       {
@@ -33,7 +33,7 @@ const TeamApi = baseApi.injectEndpoints({
       query: () => ({
         url: `team`,
       }),
-      providesTags: ["getTeam"], // Provides tag for refetching when invalidated
+      providesTags: ["getTeam", "registerTeam"], // Provides tag for refetching when invalidated
     }),
     getTeamById: builder.query<
       {
@@ -47,7 +47,7 @@ const TeamApi = baseApi.injectEndpoints({
       query: ({ teamId }) => ({
         url: `team/${teamId}`,
       }),
-      providesTags: ["getTeam", "getUserTeam"], // Provides tag for refetching when invalidated
+      providesTags: ["getTeam", "getUserTeam", "registerTeam"], // Provides tag for refetching when invalidated
     }),
     getEventByTeamId: builder.query<
       {

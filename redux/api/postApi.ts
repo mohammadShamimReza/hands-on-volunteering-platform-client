@@ -142,7 +142,7 @@ const PostApi = baseApi.injectEndpoints({
       invalidatesTags: ["getPost"], // Invalidate both the list and the specific POST entry
     }),
   }),
-  overrideExisting: false,
+  // overrideExisting: false,
 });
 
 export const {
