@@ -21,14 +21,7 @@ const PostApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["getPost"], // Invalidate the list to refetch diagonostics
     }),
-    createRegisterEvent: builder.mutation<void, Partial<UserEvent>>({
-      query: (body) => ({
-        url: `event/register-event`,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["getUserEvent"], // Invalidate the list to refetch diagonostics
-    }),
+
     getAllUserEvent: builder.query<
       {
         statusCode: number;
@@ -88,19 +81,19 @@ const PostApi = baseApi.injectEndpoints({
       providesTags: ["getPost"], // Provides tag for refetching when invalidated
     }),
 
-    getUserEventById: builder.query<
+    getPostId: builder.query<
       {
         statusCode: number;
         success: boolean;
         message: string;
-        data: UserEvent;
+        data: Post;
       },
-      { id: number }
+      { id: string }
     >({
       query: ({ id }) => ({
         url: `${POST}/${id}`,
       }),
-      providesTags: ["getUserEvent"], // Tag specific to POST ID
+      // providesTags: ["getUserEvent"], // Tag specific to POST ID
     }),
 
     updateUserEvent: builder.mutation<
@@ -147,13 +140,12 @@ const PostApi = baseApi.injectEndpoints({
 
 export const {
   useCreatePostMutation,
-  useCreateRegisterEventMutation,
   useGetAllPostQuery,
   useCreateCommentMutation,
   useGetAllUserEventQuery,
   useGetAllPostByTeamIdQuery,
+  useGetPostIdQuery,
   useGetAllPostByUserQuery,
-  useGetUserEventByIdQuery,
   useUpdateUserEventMutation,
   useDeleteEventMutation,
   useDeletePostMutation,

@@ -199,9 +199,9 @@ export default function TeamPage() {
                         <Button
                           variant="outline"
                           asChild
-                          className="text-sm md:text-base w-full bg-blue-500 text-white hover:bg-blue-600 transition"
+                          className="text-sm md:text-base w-full  transition"
                         >
-                          <Link href={`/events/${event.id}`}>See More</Link>
+                          <Link href={`/helpPost/${event.id}`}>See More</Link>
                         </Button>
                       </div>
                     </CardContent>
@@ -216,7 +216,7 @@ export default function TeamPage() {
             <Button onClick={() => setIsDialogOpen(true)} className="mb-4">
               Show All Events
             </Button>{" "}
-            <Button onClick={() => setIsDialogOpen(true)} className="mb-4">
+            <Button onClick={() => setIsDialogOpenPost(true)} className="mb-4">
               Show All Post
             </Button>{" "}
             <Button

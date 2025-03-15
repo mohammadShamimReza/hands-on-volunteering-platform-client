@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   useCreatePostMutation,
   useDeletePostMutation,
+  useGetAllPostByTeamIdQuery,
   useGetAllPostByUserQuery,
 } from "@/redux/api/postApi";
 import { useGetAllTeamByUserIdQuery } from "@/redux/api/teamApi";
@@ -23,9 +24,6 @@ const ManagePostsPage: React.FC = () => {
   const { data: PostByUser } = useGetAllPostByUserQuery({
     userId: userData.id,
   });
-
-  console.log(userData.id);
-  console.log(PostByUser?.data);
 
   const [posts, setPosts] = useState<Post[]>([]);
 
@@ -52,6 +50,14 @@ const ManagePostsPage: React.FC = () => {
     urgency: "MEDIUM",
     status: "OPEN",
   });
+
+  const [teamId, setTeamId] = useState("");
+
+  const { data: postData } = useGetAllPostByTeamIdQuery({
+    teamId: teamId || myTeams?.[0].id || "",
+  });
+
+  console.log(postData);
 
   // 🔹 Validation State
   const [errors, setErrors] = useState<{
@@ -264,7 +270,7 @@ const ManagePostsPage: React.FC = () => {
           </CardContent>
         </Card>
         {/* Display User's Help Requests */}
-        <h2 className="text-xl font-bold mb-4">Your Help Requests</h2>
+        <h2 className="text-xl font-bold mb-4">Your Post</h2>
         <div className="w-full max-w-2xl">
           {posts.length === 0 ? (
             <p className="text-center text-gray-500">
@@ -272,6 +278,48 @@ const ManagePostsPage: React.FC = () => {
             </p>
           ) : (
             posts.map((post) => (
+              <Card key={post.id} className="mb-4">
+                <CardHeader>
+                  <CardTitle>{post.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700">{post.description}</p>
+                  <p className="text-sm text-gray-500">
+                    Urgency: {post.urgency}
+                  </p>
+                  <Button
+                    onClick={() => handleDeletePost(post.id)}
+                    variant="destructive"
+                    className="mt-2"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Deleting" : "Delete"}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+        <h2 className="text-xl font-bold mb-4">Your team Post</h2>
+        <select
+          className="border p-2 rounded-md mb-5 p-2"
+          value={teamId}
+          onChange={(e) => setTeamId(e.target.value)}
+        >
+          <option value="">Select Team</option>
+          {myTeams?.map((team) => (
+            <option key={team.id} value={team.id}>
+              {team.name}
+            </option>
+          ))}
+        </select>
+        <div className="w-full max-w-2xl">
+          {postData?.data.length === 0 ? (
+            <p className="text-center text-gray-500">
+              No help requests created yet.
+            </p>
+          ) : (
+            postData?.data.map((post) => (
               <Card key={post.id} className="mb-4">
                 <CardHeader>
                   <CardTitle>{post.title}</CardTitle>
