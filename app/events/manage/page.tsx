@@ -133,7 +133,7 @@ const ManageEventsPage: React.FC = () => {
       if (result.data) {
         toast.success(
           `Event created successfull. ${
-            formattedEvent.createdByTeamId &&
+            formattedEvent?.createdByTeamId &&
             "See in the team page for event or event page"
           }`
         );
@@ -198,6 +198,7 @@ const ManageEventsPage: React.FC = () => {
               <CardTitle>Create New Event</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
+              <p>Title</p>
               <Input
                 type="text"
                 placeholder="Enter event title"
@@ -206,7 +207,7 @@ const ManageEventsPage: React.FC = () => {
                   setNewEvent({ ...newEvent, title: e.target.value })
                 }
               />
-
+              <p>Description</p>
               <Textarea
                 placeholder="Enter event description"
                 value={newEvent.description}
@@ -214,7 +215,7 @@ const ManageEventsPage: React.FC = () => {
                   setNewEvent({ ...newEvent, description: e.target.value })
                 }
               />
-
+              <p>Start Date</p>
               <Input
                 type="datetime-local"
                 value={newEvent.date}
@@ -222,7 +223,7 @@ const ManageEventsPage: React.FC = () => {
                   setNewEvent({ ...newEvent, date: e.target.value })
                 }
               />
-
+              <p>End Date</p>
               <Input
                 type="datetime-local"
                 value={newEvent.endDateTime}
@@ -230,7 +231,7 @@ const ManageEventsPage: React.FC = () => {
                   setNewEvent({ ...newEvent, endDateTime: e.target.value })
                 }
               />
-
+              <p>Location</p>
               <Input
                 type="text"
                 placeholder="Enter location"
@@ -239,7 +240,7 @@ const ManageEventsPage: React.FC = () => {
                   setNewEvent({ ...newEvent, location: e.target.value })
                 }
               />
-
+              <p>Category</p>
               <select
                 className="border p-2 rounded-md w-full"
                 value={newEvent.category}
@@ -254,7 +255,7 @@ const ManageEventsPage: React.FC = () => {
                   </option>
                 ))}
               </select>
-
+              <p>Member</p>
               <Input
                 type="number"
                 placeholder="Enter number of required members"

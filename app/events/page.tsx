@@ -21,6 +21,7 @@ const EventPage = () => {
   const [filters, setFilters] = useState({
     category: "",
     location: "",
+    available: true,
   });
 
   console.log(filters, "this is filters");
@@ -77,6 +78,22 @@ const EventPage = () => {
               }
               className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm"
             />
+            <Select
+              onValueChange={(value) =>
+                setFilters({
+                  ...filters,
+                  available: value === "true", // Convert string to boolean
+                })
+              }
+            >
+              <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm">
+                <SelectValue placeholder="Availability" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Available</SelectItem>
+                <SelectItem value="false">All</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -118,7 +135,7 @@ const EventPage = () => {
                 </CardTitle>
                 <p className="text-sm text-gray-500 flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-blue-500" />
-                  {new Date(event.date).toLocaleDateString()} at{" "}
+                  {new Date(event.endDateTime).toLocaleDateString()} at{" "}
                   {event.time || "TBD"}
                 </p>
               </CardHeader>

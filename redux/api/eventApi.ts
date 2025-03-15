@@ -48,13 +48,15 @@ const UserEventApi = baseApi.injectEndpoints({
       {
         category?: string;
         location?: string;
+        available?: boolean;
       }
     >({
-      query: ({ category, location }) => ({
+      query: ({ category, location, available }) => ({
         url: `event/`,
         params: {
           category,
           location,
+          available,
         },
       }),
       providesTags: ["getUserEvent"], // Enables refetching when invalidated
