@@ -136,7 +136,7 @@ const CommunityHelpPage = () => {
               </CardHeader>
 
               <CardContent>
-                <p className="text-gray-700 mb-4">{post.description}</p>
+                <p className=" mb-4">{post.description}</p>
 
                 <h3 className="text-md font-semibold mb-2">Comments:</h3>
                 <div className="max-h-40 overflow-y-auto bg-gray-100 p-2 rounded-md mb-2">
@@ -209,9 +209,7 @@ const CommunityHelpPage = () => {
           <DialogHeader>
             <DialogTitle>Please Login</DialogTitle>
           </DialogHeader>
-          <p className="text-gray-700">
-            You need to be logged in to comment on posts.
-          </p>
+          <p className="">You need to be logged in to comment on posts.</p>
           <Button className="w-full" onClick={() => router.push("/login")}>
             Login
           </Button>

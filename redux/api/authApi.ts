@@ -1,3 +1,4 @@
+import { User } from "@/type/Index";
 import { baseApi } from "./baseApi";
 
 const AUTH = "/auth";
@@ -24,6 +25,20 @@ const authApi = baseApi.injectEndpoints({
         return baseQueryReturnValue.data;
       },
     }),
+    getUserById: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: User;
+      },
+      { id: string }
+    >({
+      query: ({ id }) => ({
+        url: `user/${id}`,
+      }),
+      // providesTags: ["getUserEvent"], // Tag specific to POST ID
+    }),
     getUserInfo: builder.query({
       query: () => ({
         url: `${AUTH}/me`,
@@ -31,7 +46,7 @@ const authApi = baseApi.injectEndpoints({
       transformErrorResponse(baseQueryReturnValue) {
         return baseQueryReturnValue.data;
       },
-       providesTags: ["User"],
+      providesTags: ["User"],
     }),
     forgetPassword: builder.mutation({
       query: (body) => ({
@@ -59,6 +74,7 @@ const authApi = baseApi.injectEndpoints({
 export const {
   useLoginUserMutation,
   useGetUserInfoQuery,
+  useGetUserByIdQuery,
   useCreateUserMutation,
   useForgetPasswordMutation,
   useResetPasswordMutation,

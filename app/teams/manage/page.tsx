@@ -176,7 +176,7 @@ const ManageTeamsPage: React.FC = () => {
                   <CardTitle>{team.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700">{team.description}</p>
+                  <p className="">{team.description}</p>
                   <div className="flex justify-between mt-auto pt-4">
                     <Button
                       onClick={() => handleDeleteTeam(team.id)}

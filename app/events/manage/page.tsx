@@ -12,7 +12,7 @@ import {
 import { useGetAllTeamByUserIdQuery } from "@/redux/api/teamApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Event } from "@/type/Index";
-import { Loader2, Minus, MoveLeft, Plus } from "lucide-react";
+import { Loader2, Minus, MoveLeft, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -60,6 +60,9 @@ const ManageEventsPage: React.FC = () => {
   const myTeams = myAllTeams?.data || [];
 
   const [events, setEvents] = useState<Event[]>([]);
+  const getParticipantsCount = (participants: any[]): number => {
+    return Array.isArray(participants) ? participants.length : 0;
+  };
 
   useEffect(() => {
     setEventLoading(true);
@@ -272,14 +275,14 @@ const ManageEventsPage: React.FC = () => {
                     onChange={() => setIsChecked(!isChecked)}
                     className="w-4 h-4 rounded border-gray-300"
                   />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium ">
                     Create event as a team?
                   </span>
                 </label>
 
                 {isChecked && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium  mb-1">
                       Create event as *
                     </label>
                     <select
@@ -322,7 +325,7 @@ const ManageEventsPage: React.FC = () => {
           {createEventButton ? "Close" : "Create Event"}
         </Button>
 
-        <h2 className="text-xl font-bold mb-4">Your Created Events</h2>
+        <h2 className="text-2xl font-bold my-10">Your Created Events</h2>
         <div className="w-full max-w-2xl">
           {userCreateEventLoading || eventLoading ? (
             <Loader2 />
@@ -337,7 +340,7 @@ const ManageEventsPage: React.FC = () => {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 mb-2">
+                  <p className=" mb-2">
                     {event.description
                       ? event.description
                       : "No description provided."}
@@ -351,11 +354,18 @@ const ManageEventsPage: React.FC = () => {
                   <p className="text-sm font-semibold">
                     👥 Required Members: {event.requiredMembers}
                   </p>
+                  <p className="text-sm font-semibold flex">
+                    <Users className="w-5 h-5 text-green-500" />
+                    Members Joined: {getParticipantsCount(event.participants)}
+                  </p>
                   <p className="text-sm font-semibold">
                     🔒 Visibility: {event.visibility}
                   </p>
 
                   <div className="flex gap-4 mt-4">
+                    <Button variant="default">
+                      <Link href={`/events/${event?.id}`}>Show more</Link>
+                    </Button>
                     <Button
                       onClick={() => handleDeleteEvent(event?.id!!)}
                       variant="destructive"

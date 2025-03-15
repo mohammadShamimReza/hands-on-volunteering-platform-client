@@ -124,7 +124,7 @@ const EventPage = () => {
               </CardHeader>
 
               <CardContent className="flex flex-col h-full p-5">
-                <p className="text-gray-700 dark:text-gray-300 mb-3 line-clamp-3">
+                <p className=" dark:text-gray-300 mb-3 line-clamp-3">
                   {event.description || "No description available."}
                 </p>
 

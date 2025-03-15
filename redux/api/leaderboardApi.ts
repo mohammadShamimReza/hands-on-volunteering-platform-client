@@ -3,6 +3,13 @@ import { baseApi } from "./baseApi";
 
 const CONTRIBUTION = "/contribution";
 
+interface UserStats {
+  user: User;
+
+  totalHours: number;
+  totalPoints: number;
+}
+
 export type LogHoursData = {
   joinedAt: string; // When the user joined the event
   endDateTime: string; // When the event ends
@@ -30,6 +37,20 @@ const UserApi = baseApi.injectEndpoints({
       }),
       // providesTags: ["getUser"], // Provides tag for refetching when invalidated
     }),
+    getUserHourById: builder.query<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: UserStats[];
+      },
+      { id: string }
+    >({
+      query: ({ id }) => ({
+        url: `${CONTRIBUTION}/UserHour/${id}`,
+      }),
+      // providesTags: ["getUserEvent"], // Tag specific to POST ID
+    }),
     getLeaderboard: builder.query<
       {
         statusCode: number;
@@ -49,4 +70,8 @@ const UserApi = baseApi.injectEndpoints({
   overrideExisting: false,
 });
 
-export const { useGetLeaderboardQuery, useGetLogHoursQuery } = UserApi;
+export const {
+  useGetLeaderboardQuery,
+  useGetUserHourByIdQuery,
+  useGetLogHoursQuery,
+} = UserApi;

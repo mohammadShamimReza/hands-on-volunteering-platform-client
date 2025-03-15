@@ -19,20 +19,7 @@ const UserApi = baseApi.injectEndpoints({
       }),
       providesTags: ["getUser"], // Provides tag for refetching when invalidated
     }),
-    getUserById: builder.query<
-      {
-        statusCode: number;
-        success: boolean;
-        message: string;
-        data: User;
-      },
-      { id: number }
-    >({
-      query: ({ id }) => ({
-        url: `${USER}/${id}`,
-      }),
-      providesTags: (result, error, { id }) => [{ type: "User", id }], // Tag specific to USER ID
-    }),
+
     updateUser: builder.mutation<void, { id: string; body: Partial<User> }>({
       query: ({ id, body }) => ({
         url: `${USER}/${id}`,
@@ -52,9 +39,5 @@ const UserApi = baseApi.injectEndpoints({
   overrideExisting: false,
 });
 
-export const {
-  useGetAllUserQuery,
-  useGetUserByIdQuery,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
-} = UserApi;
+export const { useGetAllUserQuery, useUpdateUserMutation, useDeleteUserMutation } =
+  UserApi;

@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetPostIdQuery } from "@/redux/api/postApi";
 import { useAppSelector } from "@/redux/hooks";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 
 export default function PostDetailsPage() {
@@ -99,10 +100,12 @@ export default function PostDetailsPage() {
 
                     {/* Comment Content */}
                     <div className="flex-1">
-                      <p className="text-sm font-semibold">
-                        {comment.user.fullName}
+                      <p className="text-sm font-semibold hover:text-gray-400">
+                        <Link href={`/user/${comment.user.id}`}>
+                          {comment.user.fullName}
+                        </Link>
                       </p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
+                      <p className="text-sm  dark:text-gray-300">
                         {comment.message}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">

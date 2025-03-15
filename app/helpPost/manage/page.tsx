@@ -14,7 +14,7 @@ import {
 import { useGetAllTeamByUserIdQuery } from "@/redux/api/teamApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Post } from "@/type/Index";
-import { MoveLeft } from "lucide-react";
+import { Loader2, MoveLeft } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -51,13 +51,12 @@ const ManagePostsPage: React.FC = () => {
     status: "OPEN",
   });
 
-  const [teamId, setTeamId] = useState("");
+  const [teamId, setTeamId] = useState(myTeams?.[0].id);
 
-  const { data: postData } = useGetAllPostByTeamIdQuery({
-    teamId: teamId || myTeams?.[0].id || "",
-  });
-
-  console.log(postData);
+  const { data: postData, isLoading: postDataLoading } =
+    useGetAllPostByTeamIdQuery({
+      teamId: teamId || "",
+    });
 
   // 🔹 Validation State
   const [errors, setErrors] = useState<{
@@ -210,7 +209,7 @@ const ManagePostsPage: React.FC = () => {
 
             {/* 🔹 Urgency Selection Dropdown */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium  mb-1">
                 Urgency Level
               </label>
               <select
@@ -238,14 +237,14 @@ const ManagePostsPage: React.FC = () => {
                   onChange={() => setIsChecked(!isChecked)}
                   className="w-4 h-4 rounded border-gray-300"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium ">
                   Create post as a team?
                 </span>
               </label>
 
               {isChecked && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium  mb-1">
                     Select Team *
                   </label>
                   <select
@@ -283,7 +282,7 @@ const ManagePostsPage: React.FC = () => {
                   <CardTitle>{post.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700">{post.description}</p>
+                  <p className="">{post.description}</p>
                   <p className="text-sm text-gray-500">
                     Urgency: {post.urgency}
                   </p>
@@ -302,7 +301,7 @@ const ManagePostsPage: React.FC = () => {
         </div>
         <h2 className="text-xl font-bold mb-4">Your team Post</h2>
         <select
-          className="border p-2 rounded-md mb-5 p-2"
+          className="border p-2 rounded-md mb-5"
           value={teamId}
           onChange={(e) => setTeamId(e.target.value)}
         >
@@ -314,23 +313,24 @@ const ManagePostsPage: React.FC = () => {
           ))}
         </select>
         <div className="w-full max-w-2xl">
-          {postData?.data.length === 0 ? (
+          {postDataLoading && <Loader2 />}
+          {postData?.data?.length === 0 ? (
             <p className="text-center text-gray-500">
               No help requests created yet.
             </p>
           ) : (
-            postData?.data.map((post) => (
+            postData?.data?.map((post) => (
               <Card key={post.id} className="mb-4">
                 <CardHeader>
                   <CardTitle>{post.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700">{post.description}</p>
+                  <p className="">{post?.description}</p>
                   <p className="text-sm text-gray-500">
-                    Urgency: {post.urgency}
+                    Urgency: {post?.urgency}
                   </p>
                   <Button
-                    onClick={() => handleDeletePost(post.id)}
+                    onClick={() => handleDeletePost(post?.id)}
                     variant="destructive"
                     className="mt-2"
                     disabled={isLoading}

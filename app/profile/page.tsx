@@ -105,7 +105,7 @@ const ProfilePage: React.FC = () => {
     console.log(updatedUser, "update user data");
     try {
       const result = await updateUser({
-        id: userData.id,
+        id: userData?.id,
         body: updatedUser, // Pass the correct object
       }).unwrap();
       console.log(result, "this is update user");
@@ -120,21 +120,21 @@ const ProfilePage: React.FC = () => {
       <Card className="max-w-2xl w-full">
         <CardHeader className="flex flex-col items-center">
           <Image
-            src={userData.profileImage || "/default-avatar.png"}
+            src={userData?.profileImage || "/default-avatar.png"}
             alt="Profile"
             width={100}
             height={100}
             className="rounded-full mb-4"
           />
-          <CardTitle>{userData.fullName}</CardTitle>
-          <p className="text-sm text-gray-500">{userData.email}</p>
+          <CardTitle>{userData?.fullName}</CardTitle>
+          <p className="text-sm text-gray-500">{userData?.email}</p>
         </CardHeader>
         <CardContent>
           {isEditing ? (
             <div className="flex flex-col gap-4">
               <Input
                 type="text"
-                value={updatedUser.fullName}
+                value={updatedUser?.fullName}
                 onChange={(e) =>
                   setUpdatedUser({ ...updatedUser, fullName: e.target.value })
                 }
@@ -181,12 +181,12 @@ const ProfilePage: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              <p className="text-gray-700">{userData.bio}</p>
+              <p className="">{userData?.bio}</p>
               <p className="text-sm font-semibold">
-                Skills: {userData.skills.join(", ")}
+                Skills: {userData?.skills.join(", ")}
               </p>
               <p className="text-sm font-semibold">
-                Causes: {userData.causes.join(", ")}
+                Causes: {userData?.causes.join(", ")}
               </p>
               <Button
                 onClick={() => setIsEditing(true)}

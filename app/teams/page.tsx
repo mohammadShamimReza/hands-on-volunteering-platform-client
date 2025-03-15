@@ -16,6 +16,7 @@ import {
 import { useAppSelector } from "@/redux/hooks";
 import { Team } from "@/type/Index";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -103,7 +104,7 @@ const TeamsPage = () => {
                 </p>
               </CardHeader>
               <CardContent className="flex flex-col h-full">
-                <p className="text-gray-700 mb-4">{team?.description}</p>
+                <p className=" mb-4">{team?.description}</p>
 
                 <div className="flex justify-center  mt-auto pt-4">
                   <Button
@@ -127,18 +128,23 @@ const TeamsPage = () => {
             <DialogHeader>
               <DialogTitle>{selectedTeam.name}</DialogTitle>
             </DialogHeader>
-            <p className="text-gray-700">{selectedTeam.description}</p>
+            <p className="">{selectedTeam.description}</p>
             <p className="text-sm text-gray-500">
               Type:{" "}
               {selectedTeam.type === "PUBLIC" ? "🌍 Public" : "🔒 Private"}
             </p>
             <h3 className="font-semibold text-md mt-4">Team Posts</h3>
-            <ul className="list-disc list-inside text-gray-700">
+            <ul className="list-disc list-inside ">
               {selectedTeam.post.length > 0 ? (
                 selectedTeam.post.map((post) => (
-                  <li key={post.id} className="text-sm text-gray-600">
-                    {post.title}
-                  </li>
+                  <div key={post.id} className="text-sm p-2">
+                    <Link
+                      className="p-2 hover:bg-gray-400 rounded-xl"
+                      href={`/helpPost/${post.id}`}
+                    >
+                      {post.title}
+                    </Link>
+                  </div>
                 ))
               ) : (
                 <p className="text-sm text-gray-500">No posts available.</p>

@@ -8,7 +8,7 @@ const Footer = () => {
   const { theme } = useTheme();
 
   return (
-    <footer className="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 py-8 px-6  bottom-0 w-full">
+    <footer className="bg-gray-100 dark:bg-gray-900  dark:text-gray-300 py-8 px-6  bottom-0 w-full">
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {/* Cities Section */}
         <div>

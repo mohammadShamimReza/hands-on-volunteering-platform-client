@@ -18,6 +18,7 @@ import {
 } from "@/redux/api/eventApi";
 import { useGetLogHoursQuery } from "@/redux/api/leaderboardApi";
 import { useAppSelector } from "@/redux/hooks";
+import { UserEvent } from "@/type/Index";
 import { Calendar, Loader2, MapPin, Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -48,6 +49,10 @@ export default function EventDetailsPage() {
     (participant) => participant.userId === userId
   );
 
+  const getParticipantsCount = (participants?: UserEvent[]): number => {
+    return Array.isArray(participants) ? participants.length : 0;
+  };
+
   console.log(isCurrentUserJoined, event);
 
   // ✅ Modal States
@@ -55,6 +60,14 @@ export default function EventDetailsPage() {
 
   // ✅ Confirm Join Event
   const confirmJoinEvent = async () => {
+    if (
+      getParticipantsCount(eventData?.participants ?? []) >=
+      (eventData?.requiredMembers ?? 0)
+    ) {
+      toast.error("This event is already full. No more participants can join.");
+      return;
+    }
+
     try {
       const result = await registerEvent({
         userId,
@@ -117,7 +130,7 @@ export default function EventDetailsPage() {
 
         <CardContent className="space-y-4">
           {/* Event Date & Time */}
-          <div className="flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex items-center gap-2 text-sm ">
             <Calendar className="w-5 h-5 text-blue-500" />
             <span>
               {new Date(eventData.date).toDateString()} -{" "}
@@ -126,16 +139,20 @@ export default function EventDetailsPage() {
           </div>
 
           {/* Event Location */}
-          <div className="flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex items-center gap-2 text-sm ">
             <MapPin className="w-5 h-5 text-red-500" />
             <span>{eventData.location || "Location not specified"}</span>
           </div>
 
           {/* Required Members */}
-          <div className="flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex items-center gap-2 text-sm ">
             <Users className="w-5 h-5 text-green-500" />
             <span>Required Members: {eventData.requiredMembers}</span>
           </div>
+          <p className="text-sm font-semibold flex gap-1">
+            <Users className="w-5 h-5 text-green-500" />
+            Members Joined: {getParticipantsCount(eventData.participants)}
+          </p>
 
           {/* Event Category */}
 
@@ -177,7 +194,12 @@ export default function EventDetailsPage() {
             <Button
               className="w-full mt-4"
               onClick={confirmJoinEvent}
-              disabled={isCurrentUserJoined || isRegistering}
+              disabled={
+                isCurrentUserJoined ||
+                isRegistering ||
+                getParticipantsCount(eventData.participants) >=
+                  eventData.requiredMembers
+              }
             >
               {isRegistering ? (
                 <Loader2 className="animate-spin mr-2" />
