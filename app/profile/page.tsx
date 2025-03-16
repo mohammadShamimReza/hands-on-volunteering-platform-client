@@ -9,13 +9,12 @@ import { useGetAllRegisteredTeamsQuery } from "@/redux/api/teamApi";
 import { useUpdateUserMutation } from "@/redux/api/userApi";
 import { useAppSelector } from "@/redux/hooks";
 import { User } from "@/type/Index";
-import { Loader2 } from "lucide-react";
+import { Loader2, UploadCloud } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Select from "react-select";
-
-
 
 const skillsOptions = [
   "Academic",
@@ -66,24 +65,22 @@ const causesOptions = [
   "Technology",
 ].map((cause) => ({ label: cause, value: cause }));
 
-
-
 const ProfilePage: React.FC = () => {
-
-  const userData = useAppSelector((state) => state.auth.userInfo)
-  console.log(userData);
+  const userData = useAppSelector((state) => state.auth.userInfo);
   const { data: getUserAllregisteredEvent, isLoading: eventLoading } =
     useGetAllRegisteredEventsQuery({ userId: userData?.id });
   const { data: getUserAllRegisteredTeam, isLoading: teamLoading } =
     useGetAllRegisteredTeamsQuery({
       userId: userData?.id,
     });
+  const [uploading, setUploading] = useState<boolean>(false);
 
   const [updatedUser, setUpdatedUser] = useState<Partial<User>>({
     bio: userData?.bio,
     fullName: userData?.fullName,
     skills: userData?.skills,
     causes: userData?.causes,
+    profileImage: userData?.profileImage,
   });
 
   useEffect(() => {
@@ -93,6 +90,7 @@ const ProfilePage: React.FC = () => {
         fullName: userData.fullName,
         skills: userData.skills,
         causes: userData.causes,
+        profileImage: userData.profileImage,
       });
     }
   }, [userData]);
@@ -102,12 +100,11 @@ const ProfilePage: React.FC = () => {
   const [updateUser, { isLoading: updateUserLoading }] =
     useUpdateUserMutation();
 
-  const handleSave = async () => {
-    console.log(updatedUser, "update user data");
+  const handleSave = async (updatedData: Partial<User>) => {
     try {
       const result = await updateUser({
         id: userData?.id,
-        body: updatedUser, // Pass the correct object
+        body: updatedData, // Pass the correct object
       }).unwrap();
       console.log(result, "this is update user");
     } catch (error) {}
@@ -127,6 +124,51 @@ const ProfilePage: React.FC = () => {
             height={100}
             className="rounded-full mb-4"
           />
+          {isEditing && (
+            <CldUploadWidget
+              uploadPreset="mwo5ydzk"
+              options={{ multiple: false }}
+              onSuccess={(result: any) => {
+                console.log(result, "Image Upload Result");
+
+                if (result.event === "success") {
+                  const newImageUrl = result.info.secure_url;
+                  console.log("New Image URL:", newImageUrl);
+
+                  // ✅ Update State First
+                  setUpdatedUser((prev) => {
+                    const updatedUserData = {
+                      ...prev,
+                      profileImage: newImageUrl,
+                    };
+                    console.log("Updated User Data:", updatedUserData);
+                    return updatedUserData;
+                  });
+
+                  // ✅ Use a callback to ensure handleSave runs after state is updated
+                  setTimeout(() => {
+                    handleSave({ ...updatedUser, profileImage: newImageUrl });
+                  }, 0);
+
+                  setUploading(false);
+                }
+              }}
+            >
+              {({ open }) => (
+                <Button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault(); // ✅ Prevents any unwanted default behavior
+                    open();
+                  }}
+                  className=" bottom-0 right-0 bg-gray-800 p-2 rounded-full cursor-pointer"
+                >
+                  Upload Image
+                  <UploadCloud className="text-white w-5 h-5" />
+                </Button>
+              )}
+            </CldUploadWidget>
+          )}
           <CardTitle>{userData?.fullName}</CardTitle>
           <p className="text-sm text-gray-500">{userData?.email}</p>
         </CardHeader>
@@ -176,7 +218,10 @@ const ProfilePage: React.FC = () => {
                 }
                 placeholder="Select Causes"
               />
-              <Button onClick={handleSave} disabled={updateUserLoading}>
+              <Button
+                onClick={() => handleSave(updatedUser)}
+                disabled={updateUserLoading}
+              >
                 {updateUserLoading ? "Saving..." : "Save Changes"}
               </Button>
             </div>
