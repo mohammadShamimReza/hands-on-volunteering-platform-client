@@ -17,6 +17,7 @@ import {
 } from "@/redux/api/postApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Loader2, Trash2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -140,39 +141,50 @@ const CommunityHelpPage = () => {
                 <p className=" mb-4">{post.description}</p>
 
                 <h3 className="text-md font-semibold mb-2">Comments:</h3>
-                <div className="max-h-40 overflow-y-auto bg-gray-100 p-2 rounded-md mb-2">
-                  {post.comments?.length > 0 ? (
-                    post.comments.map((comment) => (
-                      <div
-                        key={comment.id}
-                        className="flex justify-between items-center mb-2"
-                      >
-                        <p className="text-sm">
-                          <strong className="text-blue-600">
-                            {comment.user.fullName}:
-                          </strong>{" "}
+                <div className="max-h-40 overflow-y-auto  p-2 rounded-md mb-2">
+                  {post.comments.map((comment) => (
+                    <div
+                      key={comment.id}
+                      className="p-3 border rounded-md  flex items-start gap-3"
+                    >
+                      {/* Profile Image */}
+                      <Image
+                        src={comment.user.profileImage || "/default-avatar.png"}
+                        alt={comment.user.fullName}
+                        width={40}
+                        height={40}
+                        className="rounded-full border"
+                      />
+
+                      {/* Comment Content */}
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold hover:text-gray-400">
+                          <Link href={`/user/${comment.user.id}`}>
+                            {comment.user.fullName}
+                          </Link>
+                        </p>
+                        <p className="text-sm  dark:text-gray-300">
                           {comment.message}
                         </p>
-                        {/* 🔹 Show Delete Button Only for Current User */}
-                        {userData && comment.user.id === userData.id && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleCommentDelete(comment.id)}
-                            disabled={commentDeleteLoading[comment.id]}
-                          >
-                            {commentDeleteLoading[comment.id] ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4 text-red-500" />
-                            )}
-                          </Button>
-                        )}
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500">No comments yet.</p>
-                  )}
+
+                      {/* Delete Button (Only for Own Comments) */}
+                      {comment.user && comment.user.id === comment.user.id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleCommentDelete(comment.id)}
+                          disabled={commentDeleteLoading[comment.id]}
+                        >
+                          {commentDeleteLoading[comment.id] ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
                 {/* Comment Input */}

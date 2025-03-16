@@ -13,7 +13,7 @@ import { Loader2, UploadCloud } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Select from "react-select";
 
 const skillsOptions = [
@@ -67,6 +67,7 @@ const causesOptions = [
 
 const ProfilePage: React.FC = () => {
   const userData = useAppSelector((state) => state.auth.userInfo);
+  console.log(userData, "tis is user data");
   const { data: getUserAllregisteredEvent, isLoading: eventLoading } =
     useGetAllRegisteredEventsQuery({ userId: userData?.id });
   const { data: getUserAllRegisteredTeam, isLoading: teamLoading } =
@@ -75,25 +76,7 @@ const ProfilePage: React.FC = () => {
     });
   const [uploading, setUploading] = useState<boolean>(false);
 
-  const [updatedUser, setUpdatedUser] = useState<Partial<User>>({
-    bio: userData?.bio,
-    fullName: userData?.fullName,
-    skills: userData?.skills,
-    causes: userData?.causes,
-    profileImage: userData?.profileImage,
-  });
-
-  useEffect(() => {
-    if (userData) {
-      setUpdatedUser({
-        bio: userData.bio,
-        fullName: userData.fullName,
-        skills: userData.skills,
-        causes: userData.causes,
-        profileImage: userData.profileImage,
-      });
-    }
-  }, [userData]);
+  const [updatedUser, setUpdatedUser] = useState<Partial<User>>(userData);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -111,6 +94,14 @@ const ProfilePage: React.FC = () => {
     // setUser(updatedUser);
     setIsEditing(false);
   };
+
+  if (userData.id === "") {
+    return (
+      <div className="mx-auto flex justify-center align-middle mt-10">
+        <Loader2 />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">
