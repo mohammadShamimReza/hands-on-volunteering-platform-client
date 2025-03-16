@@ -1,24 +1,104 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetPostIdQuery } from "@/redux/api/postApi";
+import { Toaster } from "@/components/ui/sonner";
+import {
+  useCreateCommentMutation,
+  useDeleteCommentMutation,
+  useGetPostIdQuery,
+} from "@/redux/api/postApi";
 import { useAppSelector } from "@/redux/hooks";
+import { Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function PostDetailsPage() {
   const params = useParams<{ slug: string }>();
+  const router = useRouter();
   const userInfo = useAppSelector((state) => state.auth.userInfo);
 
+  // ✅ Fetch post data
   const { data: postData, isLoading: getPostLoading } = useGetPostIdQuery({
     id: params.slug,
   });
 
   const post = postData?.data; // Extract post data
 
+  // ✅ Comment functionalities
+  const [createComment] = useCreateCommentMutation();
+  const [deleteComment] = useDeleteCommentMutation();
+  const [comments, setComments] = useState<string>("");
+  const [commentLoading, setCommentLoading] = useState<boolean>(false);
+  const [commentDeleteLoading, setCommentDeleteLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // ✅ If user is not logged in, show modal
+  useEffect(() => {
+    if (!userInfo) {
+      setShowLoginModal(true);
+    }
+  }, [userInfo]);
+
+  // ✅ Handle new comment submission
+  const handleCommentSubmit = async () => {
+    if (!userInfo?.id) {
+      toast.error("Please login first");
+      return;
+    }
+
+    const commentText = comments.trim();
+    if (!commentText) return;
+
+    setCommentLoading(true);
+
+    try {
+      await createComment({
+        userId: userInfo.id,
+        postId: post?.id,
+        message: commentText,
+      }).unwrap();
+
+      setComments(""); // Clear input after submission
+      toast.success("Comment added successfully!");
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+      toast.error("Failed to add comment.");
+    }
+
+    setCommentLoading(false);
+  };
+
+  // ✅ Handle comment deletion
+  const handleCommentDelete = async (commentId: string) => {
+    setCommentDeleteLoading((prev) => ({ ...prev, [commentId]: true }));
+
+    try {
+      await deleteComment(commentId).unwrap();
+      toast.success("Comment deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      toast.error("Failed to delete comment.");
+    }
+
+    setCommentDeleteLoading((prev) => ({ ...prev, [commentId]: false }));
+  };
+
+  // ✅ Loading state
   if (getPostLoading) {
     return (
       <div className="w-full max-w-3xl mx-auto p-6 animate-pulse">
@@ -35,6 +115,7 @@ export default function PostDetailsPage() {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-6">
+      <Toaster />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">{post.title}</CardTitle>
@@ -83,11 +164,11 @@ export default function PostDetailsPage() {
           <div className="mt-6">
             <h2 className="text-lg font-bold mb-3">💬 Comments</h2>
             {post.comments.length > 0 ? (
-              <div className="space-y-3">
+              <div className="max-h-40 overflow-y-auto  p-2 rounded-md mb-2">
                 {post.comments.map((comment) => (
                   <div
                     key={comment.id}
-                    className="p-3 border rounded-md bg-gray-50 dark:bg-gray-800 flex items-start gap-3"
+                    className="p-3 border rounded-md  flex items-start gap-3"
                   >
                     {/* Profile Image */}
                     <Image
@@ -108,10 +189,23 @@ export default function PostDetailsPage() {
                       <p className="text-sm  dark:text-gray-300">
                         {comment.message}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        🕒 {new Date(comment.createdAt).toLocaleString()}
-                      </p>
                     </div>
+
+                    {/* Delete Button (Only for Own Comments) */}
+                    {userInfo && comment.user.id === userInfo.id && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleCommentDelete(comment.id)}
+                        disabled={commentDeleteLoading[comment.id]}
+                      >
+                        {commentDeleteLoading[comment.id] ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        )}
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -119,8 +213,43 @@ export default function PostDetailsPage() {
               <p className="text-gray-500">No comments yet.</p>
             )}
           </div>
+
+          {/* Add Comment Input */}
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <Input
+              type="text"
+              placeholder="Write a comment..."
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              className="w-full"
+            />
+            <Button
+              className="w-full sm:w-auto"
+              onClick={handleCommentSubmit}
+              disabled={commentLoading}
+            >
+              {commentLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Comment"
+              )}
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      {/* 🔹 Login Modal */}
+      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Please Login</DialogTitle>
+          </DialogHeader>
+          <p>You need to be logged in to comment on posts.</p>
+          <Button className="w-full" onClick={() => router.push("/login")}>
+            Login
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

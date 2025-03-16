@@ -71,6 +71,7 @@ const causesOptions = [
 const ProfilePage: React.FC = () => {
 
   const userData = useAppSelector((state) => state.auth.userInfo)
+  console.log(userData);
   const { data: getUserAllregisteredEvent, isLoading: eventLoading } =
     useGetAllRegisteredEventsQuery({ userId: userData?.id });
   const { data: getUserAllRegisteredTeam, isLoading: teamLoading } =

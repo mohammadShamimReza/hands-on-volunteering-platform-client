@@ -5,7 +5,6 @@ export function middleware(request: NextRequest) {
   const currentUser = request.cookies.get("jwt")?.value;
   const { pathname } = request.nextUrl;
 
-  console.log(currentUser, 'this is current user')
 
 
   if (!currentUser) {

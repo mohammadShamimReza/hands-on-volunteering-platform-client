@@ -9,11 +9,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useNavigation } from "@/contexts/NavigatoinContext";
 import { storeTokenInCookie } from "@/lib/auth/token";
 import { useLoginUserMutation } from "@/redux/api/authApi";
 import { useAppDispatch } from "@/redux/hooks";
-import { storeAuthToken, storeUserInfo } from "@/redux/slice/authSlice";
+import { storeAuthToken } from "@/redux/slice/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -39,8 +38,6 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const { setSelectedMenu } = useNavigation();
-
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [loginUser] = useLoginUserMutation();
@@ -63,14 +60,11 @@ export default function LoginPage() {
   };
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log(data, "this is a login form");
     if (data.email !== "" && data.password !== "") {
       try {
         setLoading(true);
         data.role = "USER";
-        console.log(data);
         const result = await loginUser(data);
-        console.log(result, "this is login result");
 
         if (result?.error) {
           toast("User is not valid, please give the valid crediantials", {
@@ -86,9 +80,7 @@ export default function LoginPage() {
           dispatch(storeAuthToken(result?.data?.data.accessToken));
           localStorage.setItem("jwt", result?.data?.data.accessToken);
 
-          dispatch(storeUserInfo(result?.data?.user));
-
-          router.push("/");
+          location.replace("/");
         }
       } catch (error) {
         console.log(error);

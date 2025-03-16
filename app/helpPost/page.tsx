@@ -17,6 +17,7 @@ import {
 } from "@/redux/api/postApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Loader2, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -113,8 +114,8 @@ const CommunityHelpPage = () => {
           {posts?.map((post) => (
             <Card key={post.id} className="shadow-md mb-10">
               <CardHeader>
-                <CardTitle className="text-lg md:text-xl font-bold">
-                  {post.title}
+                <CardTitle className="text-lg md:text-xl font-bold hover:text-gray-400">
+                  <Link href={`/helpPost/${post.id}`}>{post.title}</Link>
                 </CardTitle>
                 <p className="text-sm text-gray-500">
                   Urgency:{" "}

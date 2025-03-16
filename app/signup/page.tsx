@@ -156,7 +156,7 @@ const SignupPage: React.FC = () => {
         localStorage.setItem("jwt", result?.data?.data.accessToken);
 
         dispatch(storeUserInfo(result?.data?.user));
-        // router.push("/");
+        location.replace("/");
         // window.location.reload();
       }
     } catch (error) {

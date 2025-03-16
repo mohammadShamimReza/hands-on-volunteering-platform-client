@@ -155,7 +155,11 @@ const Navbar = () => {
       {/* Theme Toggle Button */}
       <div className="flex items-center gap-2">
         {!authenticated ? (
-          <Link href={"/signup"}>Sing in</Link>
+          <Link href="/login" passHref>
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-md transition-all">
+              Log in
+            </Button>
+          </Link>
         ) : (
           <NavigationMenu>
             <NavigationMenuList>
@@ -241,16 +245,6 @@ const Navbar = () => {
           <Button variant="default" asChild>
             <Link href="/leaderboard">Leaderboard </Link>
           </Button>
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 rounded-md focus:outline-none"
-          >
-            {theme === "dark" ? (
-              <Sun className="w-6 h-6 text-yellow-400" />
-            ) : (
-              <Moon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            )}
-          </button>
         </div>
       )}
     </nav>
