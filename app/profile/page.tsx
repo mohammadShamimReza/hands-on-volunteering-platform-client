@@ -86,10 +86,23 @@ const ProfilePage: React.FC = () => {
     useUpdateUserMutation();
 
   const handleSave = async (updatedData: Partial<User>) => {
+    const {
+      eventsCreated,
+      eventsJoined,
+      teams,
+      contributions,
+      teamsCreated,
+      leaderboard,
+      certificates,
+      post,
+      comments,
+      ...filteredUserData
+    } = updatedData;
+
     try {
       const result = await updateUser({
         id: userData?.id,
-        body: updatedData, // Pass the correct object
+        body: filteredUserData, // Pass the correct object
       }).unwrap();
       console.log(result, "this is update user");
     } catch (error) {
@@ -146,7 +159,8 @@ const ProfilePage: React.FC = () => {
 
                   // ✅ Use a callback to ensure handleSave runs after state is updated
                   setTimeout(() => {
-                    handleSave({ ...updatedUser, profileImage: newImageUrl });
+                    console.log("calling", newImageUrl);
+                    handleSave({ ...userData, profileImage: newImageUrl });
                   }, 0);
                 }
               }}

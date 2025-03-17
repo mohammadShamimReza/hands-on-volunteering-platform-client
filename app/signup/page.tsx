@@ -110,7 +110,7 @@ const SignupPage: React.FC = () => {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
-  const [createUser] = useCreateUserMutation();
+  const [createUser, { isLoading }] = useCreateUserMutation();
   const formMethods = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -304,7 +304,7 @@ const SignupPage: React.FC = () => {
                   rules={{ required: true }}
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button disabled={isLoading} type="submit" className="w-full">
                 {loading ? "Creating Account..." : "Create an Account"}
               </Button>
             </form>
