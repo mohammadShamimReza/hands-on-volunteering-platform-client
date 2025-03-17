@@ -2,33 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useResetPasswordMutation } from "@/redux/api/authApi"; // Assuming you have an API setup
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { useResetPasswordMutation } from "@/redux/api/authApi";
+import { jwtDecode } from "jwt-decode"; // ✅ Use jwt-decode
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const ResetPasswordPage = () => {
+const ResetPasswordForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
-  const decodeToken = (token: string): JwtPayload | null => {
-    try {
-      return jwt.decode(token) as JwtPayload;
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      return null;
-    }
-  };
-
-  const token = searchParams.get("token") || "";
-  const res = decodeToken(token);
-
-  // Extracting token & id from the URL (which should be passed from the email)
-  const id = res?.id ;
-  const role = res?.role; // Assuming role is also passed
-
+  // ✅ Initialize hooks first
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const {
     register,
@@ -41,8 +27,26 @@ const ResetPasswordPage = () => {
       confirmPassword: "",
     },
   });
-
   const [showPassword, setShowPassword] = useState(false);
+  const [invalidToken, setInvalidToken] = useState(false);
+  const [userInfo, setUserInfo] = useState<{ id: string; role: string } | null>(
+    null
+  );
+
+  // ✅ Decode token on mount
+  useEffect(() => {
+    try {
+      if (token) {
+        const decoded = jwtDecode<{ id: string; role: string }>(token);
+        setUserInfo(decoded);
+      } else {
+        setInvalidToken(true);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      setInvalidToken(true);
+    }
+  }, [token]);
 
   const onSubmit = async (data: {
     newPassword: string;
@@ -53,29 +57,37 @@ const ResetPasswordPage = () => {
       return;
     }
 
-    if (!token || !id || !role) {
+    if (!token || !userInfo?.id || !userInfo?.role) {
       toast.error("Invalid or expired reset link.");
       return;
     }
 
     try {
       const result = await resetPassword({
-        id,
+        id: userInfo.id,
         newPassword: data.newPassword,
         token,
-        role,
+        role: userInfo.role,
       }).unwrap();
-
-      console.log(result);
 
       if (result) {
         toast.success("Password reset successfully! Redirecting to login...");
         setTimeout(() => router.push("/login"), 2000);
       }
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Something went wrong!");
+    } catch (error) {
+      console.error("Reset Password Error:", error);
+      toast.error("Something went wrong. Please try again.");
     }
   };
+
+  // ✅ Show error message for invalid token instead of early return
+  if (invalidToken) {
+    return (
+      <div className="text-center text-red-500 font-semibold mt-10">
+        Invalid or expired reset link.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
@@ -137,6 +149,14 @@ const ResetPasswordPage = () => {
         </form>
       </div>
     </div>
+  );
+};
+
+const ResetPasswordPage = () => {
+  return (
+    <Suspense fallback={<p className="text-center">Loading...</p>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 };
 
