@@ -12,8 +12,8 @@ export function middleware(request: NextRequest) {
       pathname.startsWith("/profile") ||
       pathname.startsWith("/events/manage") ||
       pathname.startsWith("/teams/manage") ||
-      pathname.startsWith("/helpPost/manage") ||
-      pathname.startsWith("/payment")
+      pathname.startsWith("/teams/") ||
+      pathname.startsWith("/helpPost/manage")
     ) {
       return NextResponse.redirect(new URL("/login", request.url));
     }

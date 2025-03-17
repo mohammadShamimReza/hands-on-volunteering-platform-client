@@ -18,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -51,7 +50,6 @@ const signupSchema = z.object({
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
-type OptionType = { label: string; value: string };
 
 const skillsOptions = [
   "Academic",
@@ -107,7 +105,6 @@ const SignupPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // Local loading state
 
-  const router = useRouter();
   const dispatch = useAppDispatch();
 
   const togglePasswordVisibility = () => {
@@ -134,7 +131,7 @@ const SignupPage: React.FC = () => {
 
   const onSubmit = async (data: SignupFormData) => {
     console.log(data, "this is input data");
-    data.role="USER"
+    data.role = "USER";
     // Simulated API call
     setLoading(true); // Start loading
     try {

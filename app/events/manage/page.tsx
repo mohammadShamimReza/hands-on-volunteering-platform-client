@@ -11,7 +11,7 @@ import {
 } from "@/redux/api/eventApi";
 import { useGetAllTeamByUserIdQuery } from "@/redux/api/teamApi";
 import { useAppSelector } from "@/redux/hooks";
-import { Event } from "@/type/Index";
+import { Event, UserEvent } from "@/type/Index";
 import { Loader2, Minus, MoveLeft, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -50,8 +50,7 @@ const ManageEventsPage: React.FC = () => {
     useGetAllUserEventByUserQuery({ userId: userData.id });
   const [createEvent, { isLoading: eventCreateLoading }] =
     useCreateEventMutation();
-  const [deleteEvent, { isLoading: eventDeleteLoading }] =
-    useDeleteEventMutation();
+  const [deleteEvent] = useDeleteEventMutation();
 
   const { data: myAllTeams } = useGetAllTeamByUserIdQuery({
     userId: userData.id,
@@ -60,7 +59,7 @@ const ManageEventsPage: React.FC = () => {
   const myTeams = myAllTeams?.data || [];
 
   const [events, setEvents] = useState<Event[]>([]);
-  const getParticipantsCount = (participants: any[]): number => {
+  const getParticipantsCount = (participants: UserEvent[]): number => {
     return Array.isArray(participants) ? participants.length : 0;
   };
 
@@ -100,7 +99,7 @@ const ManageEventsPage: React.FC = () => {
       !newEvent?.endDateTime ||
       !newEvent?.location ||
       !newEvent?.category ||
-      newEvent?.requiredMembers! < 1
+      (newEvent?.requiredMembers ?? 0) < 1 // ✅ Provide a default value instead of using "!"
     ) {
       alert("Please fill in all required fields.");
       return;
@@ -175,6 +174,7 @@ const ManageEventsPage: React.FC = () => {
           toast.success(`Event Deleted successfull. `);
         }
       } catch (error) {
+        console.log(error);
         alert("Failed to delete event. Please try again.");
       }
     }
@@ -368,7 +368,7 @@ const ManageEventsPage: React.FC = () => {
                       <Link href={`/events/${event?.id}`}>Show more</Link>
                     </Button>
                     <Button
-                      onClick={() => handleDeleteEvent(event?.id!!)}
+                      onClick={() => handleDeleteEvent(event.id)}
                       variant="destructive"
                     >
                       Delete

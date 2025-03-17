@@ -16,7 +16,6 @@ import { storeAuthToken } from "@/redux/slice/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -38,7 +37,6 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const [loginUser] = useLoginUserMutation();
   const [loading, setLoading] = useState(false); // Local loading state

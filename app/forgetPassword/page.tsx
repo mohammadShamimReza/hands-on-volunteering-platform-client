@@ -58,7 +58,7 @@ function ForgetPassword() {
     <div className="min-h-screen mt-10 flex flex-col items-center">
       <h2 className="text-2xl font-bold">Forgot Password?</h2>
       <p className="text-sm text-gray-600 mt-2">
-        Enter your email, and we'll send you a link to reset your password.
+        Enter your email, and we&apos;ll send you a link to reset your password.
       </p>
 
       {/* ✅ Reset Link Display */}

@@ -24,16 +24,16 @@ const ProfilePage: React.FC = () => {
 
   console.log(userStar);
 
-  const { data: userInfo, isLoading: userLoading } = useGetUserByIdQuery({
+  const { data: userInfo } = useGetUserByIdQuery({
     id: params.slug,
   });
-  const userData = userInfo?.data!!;
+  const userData = userInfo?.data;
 
   const { data: registeredEvents, isLoading: eventLoading } =
-    useGetAllRegisteredEventsQuery({ userId: userData?.id });
+    useGetAllRegisteredEventsQuery({ userId: userData?.id || "" });
 
   const { data: registeredTeams, isLoading: teamLoading } =
-    useGetAllRegisteredTeamsQuery({ userId: userData?.id });
+    useGetAllRegisteredTeamsQuery({ userId: userData?.id || "" });
 
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">

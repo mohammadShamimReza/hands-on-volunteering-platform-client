@@ -90,34 +90,36 @@ const TeamsPage = () => {
         <p>No teams found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl px-4 md:px-8">
-          {teams?.map((team) => (
-            <Card
-              key={team.id}
-              className="shadow-md flex flex-col justify-between h-full"
-            >
-              <CardHeader>
-                <CardTitle className="text-lg md:text-xl">
-                  {team.name}
-                </CardTitle>
-                <p className="text-sm text-gray-500">
-                  Type: {team.type === "PUBLIC" ? "🌍 Public" : "🔒 Private"}
-                </p>
-              </CardHeader>
-              <CardContent className="flex flex-col h-full">
-                <p className=" mb-4">{team?.description}</p>
+          {teams
+            ?.filter((team) => team.type === "PUBLIC")
+            .map((team) => (
+              <Card
+                key={team.id}
+                className="shadow-md flex flex-col justify-between h-full"
+              >
+                <CardHeader>
+                  <CardTitle className="text-lg md:text-xl">
+                    {team.name}
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Type: {team.type === "PUBLIC" ? "🌍 Public" : "🔒 Private"}
+                  </p>
+                </CardHeader>
+                <CardContent className="flex flex-col h-full">
+                  <p className=" mb-4">{team?.description}</p>
 
-                <div className="flex justify-center  mt-auto pt-4">
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => openTeamModal(team)}
-                  >
-                    View Team
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="flex justify-center  mt-auto pt-4">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => openTeamModal(team)}
+                    >
+                      View Team
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
         </div>
       )}
 

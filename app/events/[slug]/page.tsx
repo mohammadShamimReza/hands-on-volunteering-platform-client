@@ -37,8 +37,10 @@ export default function EventDetailsPage() {
     useCreateRegisterEventMutation();
   const eventData = event?.data;
 
-  const { data: logHoursData, isLoading: logHoursLoading } =
-    useGetLogHoursQuery({ userId: userInfo.id, eventId: params.slug });
+  const { data: logHoursData } = useGetLogHoursQuery({
+    userId: userInfo.id,
+    eventId: params.slug,
+  });
 
   const hoursVolunteered = logHoursData?.data?.hoursVolunteered || 0; // Default to 0
 

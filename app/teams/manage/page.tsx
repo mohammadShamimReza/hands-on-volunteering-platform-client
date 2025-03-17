@@ -81,6 +81,7 @@ const ManageTeamsPage: React.FC = () => {
         });
       }
     } catch (error) {
+      console.log(error);
       toast("Team creation failed! please try again letter", {
         style: {
           backgroundColor: "red",
@@ -116,6 +117,7 @@ const ManageTeamsPage: React.FC = () => {
         });
       }
     } catch (error) {
+      console.log(error);
       toast("Team deletion failed! please try again letter", {
         style: {
           backgroundColor: "red",

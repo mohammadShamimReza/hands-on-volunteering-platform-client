@@ -65,7 +65,7 @@ const ManagePostsPage: React.FC = () => {
   }>({});
 
   const handleCreatePost = async () => {
-    let validationErrors: { title?: string; description?: string } = {};
+    const validationErrors: { title?: string; description?: string } = {};
 
     if (!newPost.title?.trim()) {
       validationErrors.title = "Title is required.";
@@ -98,11 +98,15 @@ const ManagePostsPage: React.FC = () => {
         });
       }
       if (result?.data) {
-        `Event created successfull. ${
-          formattedPost?.createdByTeamId &&
-          "See in the team page for event or event page"
-        }`;
+        toast.success(
+          `Event created successfully. ${
+            formattedPost?.createdByTeamId
+              ? "See in the team page for event or event page."
+              : ""
+          }`
+        );
       }
+
       if (result) {
         setPosts((prevPosts) => [...prevPosts, formattedPost as Post]);
       }

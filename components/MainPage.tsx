@@ -10,7 +10,7 @@ const HomePage = () => {
       {/* Hero Section */}
       <section
         className=" w-full h-[80vh] flex flex-col justify-center items-center text-black text-center bg-cover bg-center "
-        style={{ backgroundImage: "url('/hero-image.webp')"}}
+        style={{ backgroundImage: "url('/hero-image.webp')" }}
       >
         <div className="bg-opacity-50 w-full h-full flex flex-col justify-center items-center px-4">
           <h1 className="text-5xl font-bold mb-4">
@@ -25,30 +25,6 @@ const HomePage = () => {
               <Link href="/events">Find Opportunities</Link>
             </Button>
           </div>
-        </div>
-      </section>
-
-      {/* Volunteering Categories Section */}
-      <section className="py-16 w-full max-w-6xl text-center">
-        <h2 className="text-3xl font-bold mb-6">
-          Discover Volunteering Categories
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
-          {[
-            "Education",
-            "Health",
-            "Community",
-            "Children & Youth",
-            "Environment",
-            "Arts & Culture",
-          ].map((category) => (
-            <div
-              key={category}
-              className="p-4 border rounded-lg shadow text-center"
-            >
-              <p className="font-semibold">{category}</p>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -106,15 +82,15 @@ const HomePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="p-6 border-dashed border-2 rounded-lg shadow">
             <p className="italic">
-              "Volunteering has changed my life! I’ve made so many connections
-              and helped causes I deeply care about."
+              &quot;Volunteering has changed my life! I&apos;ve made so many
+              connections and helped causes I deeply care about.&quot;
             </p>
             <p className="mt-4 font-semibold">- Sarah, Community Volunteer</p>
           </div>
           <div className="p-6 border-dashed border-2 rounded-lg shadow">
             <p className="italic">
-              "HandsOn gave me the opportunity to contribute to meaningful
-              projects and make a real impact!"
+              &quot;HandsOn gave me the opportunity to contribute to meaningful
+              projects and make a real impact!&quot;
             </p>
             <p className="mt-4 font-semibold">- Mark, Team Leader</p>
           </div>

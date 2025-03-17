@@ -5,9 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetLeaderboardQuery } from "@/redux/api/leaderboardApi";
 import { useAppSelector } from "@/redux/hooks";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-const certificateMilestones = [20, 50, 100]; // 🏅 Hours required for certificates
 
 const Page = () => {
   const userData = useAppSelector((state) => state.auth.userInfo);
@@ -65,10 +64,12 @@ const Page = () => {
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-lg font-bold">{index + 1}.</span>
-                    <img
+                    <Image
                       src={user.user.profileImage || "/default-avatar.png"}
-                      alt={user.user.fullName}
+                      alt={user.user.fullName || "me"}
                       className="w-10 h-10 rounded-full border"
+                      height={40}
+                      width={40}
                     />
                     <span className="font-medium">{user.user.fullName}</span>
                   </div>

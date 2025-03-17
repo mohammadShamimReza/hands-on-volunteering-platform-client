@@ -18,7 +18,7 @@ const initialState: AuthState = {
     skills: [], // Empty (user can add skills)
     causes: [], // Empty (user can add causes)
     role: "USER", // Defaults to normal user
-    profileImage:'', // Empty (user can upload)
+    profileImage: "", // Empty (user can upload)
     createdAt: new Date().toISOString(), // Default to current timestamp
     updatedAt: new Date().toISOString(),
 
@@ -28,7 +28,7 @@ const initialState: AuthState = {
     teams: [],
     contributions: [],
     post: [],
-    helpResponses: [],
+    comments: [],
     teamsCreated: [],
     leaderboard: [],
     certificates: [],

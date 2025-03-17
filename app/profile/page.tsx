@@ -10,7 +10,10 @@ import { useUpdateUserMutation } from "@/redux/api/userApi";
 import { useAppSelector } from "@/redux/hooks";
 import { User } from "@/type/Index";
 import { Loader2, UploadCloud } from "lucide-react";
-import { CldUploadWidget } from "next-cloudinary";
+import {
+  CldUploadWidget,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -74,7 +77,6 @@ const ProfilePage: React.FC = () => {
     useGetAllRegisteredTeamsQuery({
       userId: userData?.id,
     });
-  const [uploading, setUploading] = useState<boolean>(false);
 
   const [updatedUser, setUpdatedUser] = useState<Partial<User>>(userData);
 
@@ -90,7 +92,9 @@ const ProfilePage: React.FC = () => {
         body: updatedData, // Pass the correct object
       }).unwrap();
       console.log(result, "this is update user");
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
     // setUser(updatedUser);
     setIsEditing(false);
   };
@@ -119,10 +123,14 @@ const ProfilePage: React.FC = () => {
             <CldUploadWidget
               uploadPreset="mwo5ydzk"
               options={{ multiple: false }}
-              onSuccess={(result: any) => {
+              onSuccess={(result: CloudinaryUploadWidgetResults) => {
                 console.log(result, "Image Upload Result");
 
-                if (result.event === "success") {
+                if (
+                  result.event === "success" &&
+                  typeof result.info === "object" &&
+                  result.info?.secure_url
+                ) {
                   const newImageUrl = result.info.secure_url;
                   console.log("New Image URL:", newImageUrl);
 
@@ -140,8 +148,6 @@ const ProfilePage: React.FC = () => {
                   setTimeout(() => {
                     handleSave({ ...updatedUser, profileImage: newImageUrl });
                   }, 0);
-
-                  setUploading(false);
                 }
               }}
             >
@@ -176,7 +182,7 @@ const ProfilePage: React.FC = () => {
               />
               <Textarea
                 value={updatedUser.bio}
-                onChange={(e: any) =>
+                onChange={(e) =>
                   setUpdatedUser({ ...updatedUser, bio: e.target.value })
                 }
                 placeholder="Bio"
@@ -187,7 +193,9 @@ const ProfilePage: React.FC = () => {
                 value={skillsOptions.filter((option) =>
                   updatedUser?.skills?.includes(option.value)
                 )}
-                onChange={(selected) =>
+                onChange={(
+                  selected: readonly { value: string; label: string }[]
+                ) =>
                   setUpdatedUser({
                     ...updatedUser,
                     skills: selected.map((s) => s.value),
@@ -242,13 +250,13 @@ const ProfilePage: React.FC = () => {
         <h2 className="text-xl font-bold mb-4">Manage Your Content</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Button asChild>
-            <a href="/events/manage">Manage Events</a>
+            <Link href="/events/manage">Manage Events</Link>
           </Button>
           <Button asChild>
-            <a href="/teams/manage">Manage Teams</a>
+            <Link href="/teams/manage">Manage Teams</Link>
           </Button>
           <Button asChild>
-            <a href="/helpPost/manage">Manage Posts</a>
+            <Link href="/helpPost/manage">Manage Posts</Link>
           </Button>
         </div>
       </section>
