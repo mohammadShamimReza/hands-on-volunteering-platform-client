@@ -2,58 +2,87 @@
 import { Button } from "@/components/ui/button";
 import { useForgetPasswordMutation } from "@/redux/api/authApi";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface ErrorType {
-  response: {
-    statusCode: number;
-    message: string;
-    errorMessages: string;
+  response?: {
+    statusCode?: number;
+    message?: string;
+    errorMessages?: string;
   };
 }
 
-function ForgetPassword() {
-    const [forgetPassword, { data }] = useForgetPasswordMutation();
-    console.log(data)
-  const [loading, setLoading] = useState(false);
+interface ForgetPasswordResponse {
+  statusCode?: number;
+  success?: boolean;
+  message?: string | null;
+  data?: string; // 🔹 Now, reset link is stored directly in "data"
+}
 
-  const { register, handleSubmit, formState, control } = useForm({
+function ForgetPassword() {
+  const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const { register, handleSubmit, formState } = useForm({
     defaultValues: {
       email: "",
-      role: "", // default role value
     },
   });
 
   const { errors } = formState;
 
-  const onSubmit = async (data: { email: string; role: string }) => {
-    console.log(data);
-    setLoading(true);
-    toast.loading("Sending...");
+  const onSubmit = async (data: { email: string }) => {
     try {
-        const result = await forgetPassword(data);
-        console.log(result)
-      toast.success("Please check your email");
+      const result: ForgetPasswordResponse = await forgetPassword(
+        data
+      ).unwrap();
+      console.log(result);
+      const resetLink = result?.data; // 🔹 Extract only the reset link
+
+      if (resetLink) {
+        setPreviewUrl(resetLink); // ✅ Now setting only the string URL
+        toast.success("Password reset link sent! Check your email.");
+      } else {
+        toast.error("Failed to retrieve reset link.");
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error:", error);
       const specificError = error as ErrorType;
-      const logError = specificError?.response;
-      toast.error(logError?.errorMessages || "An error occurred");
+      const errorMessage =
+        specificError?.response?.errorMessages || "An error occurred.";
+      toast.error(errorMessage);
     }
   };
-
   return (
-    <div className="min-h-screen">
-      <div className="text-center text-lg">
-        Please enter your email and role
-      </div>
-      <form className="max-w-md mx-auto my-8" onSubmit={handleSubmit(onSubmit)}>
+    <div className="min-h-screen mt-10 flex flex-col items-center">
+      <h2 className="text-2xl font-bold">Forgot Password?</h2>
+      <p className="text-sm text-gray-600 mt-2">
+        Enter your email, and we'll send you a link to reset your password.
+      </p>
+
+      {/* ✅ Reset Link Display */}
+      {previewUrl && (
+        <div className="mt-5 bg-blue-50 border border-blue-300 text-blue-800 p-3 rounded-md shadow-md text-center">
+          <p>Password reset link:</p>
+          <a
+            href={previewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline font-medium"
+          >
+            Click here to reset your password
+          </a>
+        </div>
+      )}
+
+      {/* ✅ Email Input Form */}
+      <form className="max-w-md w-full mt-6" onSubmit={handleSubmit(onSubmit)}>
         <label
-          className="block mb-2 text-sm font-bold text-gray-600"
+          className="block text-sm font-semibold text-gray-700"
           htmlFor="email"
         >
-          Email
+          Email Address
         </label>
         <input
           className={`w-full p-2 border rounded-lg ${
@@ -61,6 +90,7 @@ function ForgetPassword() {
           }`}
           type="email"
           id="email"
+          placeholder="Enter your email"
           {...register("email", {
             required: "Email is required",
             pattern: {
@@ -73,33 +103,8 @@ function ForgetPassword() {
           <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
         )}
 
-        <label
-          className="block mt-4 mb-2 text-sm font-bold text-gray-600"
-          htmlFor="role"
-        >
-          Role
-        </label>
-        <Controller
-          name="role"
-          control={control}
-          rules={{ required: "Role is required" }}
-          render={({ field }) => (
-            <select {...field} className="w-full border rounded-md p-2">
-              <option value="">Select a role</option>
-              <option value="patient">Patient</option>
-              <option value="admin">Admin</option>
-              <option value="doctor">Doctor</option>
-              <option value="staff">Staff</option>
-              <option value="nurse">Nurse</option>
-            </select>
-          )}
-        />
-        {errors.role && (
-          <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
-        )}
-
-        <Button type="submit" className="w-full mt-4" disabled={loading}>
-          {loading ? "Submitting..." : "Submit"}
+        <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+          {isLoading ? "Sending..." : "Send Reset Link"}
         </Button>
       </form>
     </div>

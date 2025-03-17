@@ -37,6 +37,8 @@ const Navbar = () => {
 
   const { data: userData, isLoading } = useGetUserInfoQuery({ undefined });
 
+  console.log(userData, "user data");
+
   useEffect(() => {
     if (userData) {
       dispatch(storeUserInfo(userData?.data));
@@ -92,8 +94,6 @@ const Navbar = () => {
       window.location.href = "/";
     }
   };
-
-  console.log(authenticated, "authenticated");
 
   return (
     <nav className="flex justify-between items-center w-full px-6  bg-white dark:bg-gray-900 shadow-md relative">
@@ -165,12 +165,12 @@ const Navbar = () => {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>
-                  {userData?.profileImage ? (
+                  {userData?.data.profileImage ? (
                     <Image
-                      src={userData?.profileImage}
+                      src={userData?.data.profileImage || "/default-avater.png"}
                       alt="Profile Picture"
-                      width={40}
-                      height={40}
+                      width={30}
+                      height={30}
                       className="rounded-full"
                     />
                   ) : (

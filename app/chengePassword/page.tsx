@@ -19,7 +19,6 @@ interface ErrorType {
 }
 interface UserInfo {
   id: string;
-  role: string;
 }
 
 function ResetPass() {
@@ -31,7 +30,7 @@ function ResetPass() {
 
   const token = searchParams.get("token");
   const userInfo = decodedToken(token as string) as UserInfo;
-  const { id, role } = userInfo;
+  const { id } = userInfo;
 
   const [resetPassword] = useResetPasswordMutation();
   const { register, handleSubmit, formState, watch, reset } = useForm({
@@ -39,7 +38,6 @@ function ResetPass() {
       password: "",
       newPassword: "",
       id: id,
-      role: role,
       token: token || "",
     },
   });
@@ -58,11 +56,9 @@ function ResetPass() {
     password: string;
     newPassword: string;
     id: string;
-    role: string;
     token: string;
   }) => {
     data.id = id;
-    data.role = role;
     data.token = token || "";
     setLoading(true);
     try {
