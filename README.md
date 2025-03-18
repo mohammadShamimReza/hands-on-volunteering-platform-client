@@ -6,6 +6,9 @@
 </p>
 
 
+[Live](https://hands-on-volunteering-platform-client.vercel.app/)
+
+
 # Project Title
 
 A community-driven social volunteering platform that connects individuals with meaningful social impact opportunities. Users can discover and join volunteer-driven events, post requests for community help, form teams for large-scale initiatives, and track their impact with contributions logged on a personal and team level.
@@ -109,7 +112,7 @@ To run this project, you will need to add the following environment variables to
 
 
 
-## Server
+## Server site code
 
 [Code](https://github.com/mohammadShamimReza/hands-on-volunteering-platform-server)
 

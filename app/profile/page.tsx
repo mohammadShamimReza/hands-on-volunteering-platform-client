@@ -86,6 +86,7 @@ const ProfilePage: React.FC = () => {
     useUpdateUserMutation();
 
   const handleSave = async (updatedData: Partial<User>) => {
+    // @typescript-eslint/no-unused-vars
     const {
       eventsCreated,
       eventsJoined,
@@ -98,6 +99,18 @@ const ProfilePage: React.FC = () => {
       comments,
       ...filteredUserData
     } = updatedData;
+
+    console.log(
+      eventsCreated,
+      eventsJoined,
+      teams,
+      contributions,
+      teamsCreated,
+      leaderboard,
+      certificates,
+      post,
+      comments
+    );
 
     try {
       const result = await updateUser({
