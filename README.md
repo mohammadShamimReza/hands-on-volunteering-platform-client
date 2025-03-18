@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="https://res.cloudinary.com/dqwnzs85c/image/upload/v1742302188/logo_lktt4p.png" alt="Logo" width="100">
 
-## Getting Started
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
-First, run the development server:
+</p>
+
+
+# Project Title
+
+A community-driven social volunteering platform that connects individuals with meaningful social impact opportunities. Users can discover and join volunteer-driven events, post requests for community help, form teams for large-scale initiatives, and track their impact with contributions logged on a personal and team level.
+
+
+
+
+## Tech Stack
+
+**Client:** Next.js, Redux, TailwindCSS
+
+**Database:** PostgreSQL(prisma)
+
+**Authentication:** JWT-based auth
+
+**API Communication:** REST API
+
+**Deployment:** Vercel, cloudinary(image)
+
+
+
+
+
+
+## 🚀 Features
+
+### 1️⃣ User Registration & Profile Management
+- Secure sign-up and login with email and password
+- Users can edit their profiles, list their skills, and select causes they support
+- Volunteer history and contributions are visible in the user dashboard
+
+### 2️⃣ Discover & Join Volunteer Events
+- Users or organizations can create events with details like title, description, date, time, and location
+- Public event feed with category, location, and availability filters
+- One-click event registration for instant participation
+- Events and community help posts are differentiated
+
+### 3️⃣ Community Help Requests
+- Users or organizations can post help requests
+- Other users can offer help via comments.
+- Requests have urgency levels (Low, Medium, Urgent) for better prioritization
+
+### 4️⃣ Form Teams & Group Initiatives
+- Users can create **private** (invite-only) or **public** (open-for-all) teams
+- Team dashboards show members, events.
+- A leaderboard highlights the most active teams
+
+### 5️⃣ Impact Tracking & Social Recognition
+- Users log volunteer hours after attending events
+- Users earn points (5 points per hour) and receive auto-generated certificates at milestones (20, 50, 100 hours)
+- Public leaderboard ranks the most active volunteers
+
+
+
+## Run Locally
+
+Clone the project
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+  git clone git@github.com:mohammadShamimReza/hands-on-volunteering-platform-client.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Go to the project directory
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+  cd hands-on-volunteering-platform-client
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Install dependencies
 
-## Learn More
+```bash
+  npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Start the server
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+  npm run dev
+```
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`NEXT_PUBLIC_BACKEND_URL=[Your server site port/api/v1]`
+
+`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=[your cloudinary name]`
+
+`NEXT_PUBLIC_CLOUDINARY_API_KEY=[your cloudinary api key]`
+
+`NEXT_PUBLIC_CLOUDINARY_API_SECRET=[your cloudinary api secret]`
+
+
+## Authors
+
+- [shamimReza](https://github.com/mohammadShamimReza)
+
+
+
+
+## Server
+
+[Code](https://github.com/mohammadShamimReza/hands-on-volunteering-platform-server)
+
+
+
