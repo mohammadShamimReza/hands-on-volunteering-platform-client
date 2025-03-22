@@ -98,16 +98,8 @@ export default function LoginPage() {
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">Login</h1>
             <p className="text-muted-foreground">
-              Get all login crediantials in{" "}
-              <Link
-                className="underline text-blue-700"
-                href={
-                  "https://github.com/mohammadShamimReza/Shamim-Hospital-frontend?tab=readme-ov-file#credentials-for-testing"
-                }
-                target="_blank"
-              >
-                Here
-              </Link>
+              Login! It is free
+             
             </p>
           </div>
 
