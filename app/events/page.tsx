@@ -21,7 +21,7 @@ const EventPage = () => {
   const [filters, setFilters] = useState({
     category: "",
     location: "",
-    available: true,
+    available: false,
   });
 
   console.log(filters, "this is filters");
@@ -29,7 +29,7 @@ const EventPage = () => {
   // 🛠️ Fetching Events with Filters
   const { data: allEvents, isLoading } = useGetAllEventQuery(filters);
 
-  console.log(allEvents);
+  console.log(allEvents, "This is all event");
 
   return (
     <div className="w-full flex flex-col items-center py-10 px-4">
@@ -87,11 +87,11 @@ const EventPage = () => {
               }
             >
               <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm">
-                <SelectValue placeholder="Availability" />
+                <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="true">Available</SelectItem>
                 <SelectItem value="false">All</SelectItem>
+                <SelectItem value="true">Available</SelectItem>
               </SelectContent>
             </Select>
           </div>
